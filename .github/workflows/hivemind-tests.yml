@@ -1,4 +1,5 @@
 # HiveMind pytest gate for this repository.
+# Runs on every PR because hivemind-tests is a required check.
 # Does not duplicate security.yml, arc-gates.yml, or the Arc jobs in ci.yml.
 # Action SHAs: see ci/PINNED_SHAS.md (verified 2026-11-14 via gh api).
 
@@ -6,14 +7,8 @@ name: hivemind-tests
 
 on:
   pull_request:
-    paths:
-      - "hivemind/**"
-      - ".github/workflows/hivemind-tests.yml"
   push:
     branches: [main]
-    paths:
-      - "hivemind/**"
-      - ".github/workflows/hivemind-tests.yml"
   schedule:
     - cron: "0 6 * * *"
   workflow_dispatch:
