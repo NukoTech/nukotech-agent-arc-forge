@@ -1,0 +1,28 @@
+filters:
+  and:
+    - 'file.ext == "md"'
+    - 'file.inFolder("_proposals")'
+views:
+  - type: table
+    name: Promotion queue
+    filters:
+      and:
+        - 'status == "PROPOSED"'
+    order:
+      - file.name
+      - note.record_type
+      - note.lane_kind
+      - note.lane_owner
+      - note.recorded_at
+      - note.target_moc
+properties:
+  note.record_type:
+    displayName: Record type
+  note.lane_kind:
+    displayName: Lane
+  note.lane_owner:
+    displayName: Owner
+  note.recorded_at:
+    displayName: Recorded
+  note.target_moc:
+    displayName: Target MOC

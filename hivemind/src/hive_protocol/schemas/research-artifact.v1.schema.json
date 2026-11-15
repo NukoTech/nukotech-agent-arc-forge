@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/research-artifact.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "artifact_id", "workspace_id", "tenant_id",
+    "project_id", "source_set_digest", "artifact_type", "status",
+    "markdown_path", "markdown_sha256", "generator", "provider_state",
+    "claims", "contradictions", "uncertainties", "verification_state",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.research-artifact.v1"},
+    "artifact_id": {"$ref": "#/$defs/safe_id"},
+    "workspace_id": {"$ref": "#/$defs/safe_id"},
+    "tenant_id": {"$ref": "#/$defs/safe_id"},
+    "project_id": {"$ref": "#/$defs/safe_id"},
+    "source_set_digest": {"$ref": "#/$defs/sha256"},
+    "artifact_type": {"enum": ["CITED_ANSWER", "SOURCE_SUMMARY", "COMPARISON", "TIMELINE", "BRIEF", "QUESTIONS", "OUTLINE", "STUDY_GUIDE", "ACTION_ITEMS"]},
+    "status": {"enum": ["NO_EVIDENCE", "RETRIEVAL_ONLY", "MODEL_OUTPUT_REJECTED", "ANSWERED", "DEGRADED", "FAILED"]},
+    "markdown_path": {"$ref": "#/$defs/path"},
+    "markdown_sha256": {"$ref": "#/$defs/sha256"},
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id"],
+      "properties": {
+        "kind": {"enum": ["DETERMINISTIC_RETRIEVAL", "LOCAL_PROVIDER"]},
+        "id": {"$ref": "#/$defs/safe_id"}
+      }
+    },
+    "provider_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["available", "reason"],
+      "properties": {
+        "available": {"type": "boolean"},
+        "reason": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,63}$"}
+      }
+    },
+    "claims": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["text", "citation_anchor_ids", "uncertainty"],
+        "properties": {
+          "text": {"type": "string", "minLength": 1, "maxLength": 16384},
+          "citation_anchor_ids": {"type": "array", "uniqueItems": true, "maxItems": 128, "items": {"$ref": "#/$defs/safe_id"}},
+          "uncertainty": {"type": ["string", "null"], "maxLength": 2048}
+        }
+      }
+    },
+    "contradictions": {"type": "array", "maxItems": 1000, "items": {"type": "object"}},
+    "uncertainties": {"type": "array", "maxItems": 1000, "items": {"type": "object"}},
+    "verification_state": {"enum": ["UNVERIFIED", "RETRIEVAL_VERIFIED", "VERIFIED", "REJECTED"]},
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "safe_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._:/-]{1,512}$"}
+  }
+}

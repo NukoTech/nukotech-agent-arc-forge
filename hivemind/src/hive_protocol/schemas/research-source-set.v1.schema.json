@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/research-source-set.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source_set_id", "workspace_id", "tenant_id", "project_id", "parent_digest", "sources", "retrieval_policy", "created_at"],
+  "properties": {
+    "schema_version": {"const": "hive.research-source-set.v1"},
+    "source_set_id": {"$ref": "#/$defs/safe_id"},
+    "workspace_id": {"$ref": "#/$defs/safe_id"},
+    "tenant_id": {"$ref": "#/$defs/safe_id"},
+    "project_id": {"$ref": "#/$defs/safe_id"},
+    "parent_digest": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_id", "source_record_digest"],
+        "properties": {
+          "source_id": {"$ref": "#/$defs/safe_id"},
+          "source_record_digest": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    },
+    "retrieval_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exact_first", "semantic_allowed", "max_results", "max_quote_bytes"],
+      "properties": {
+        "exact_first": {"const": true},
+        "semantic_allowed": {"type": "boolean"},
+        "max_results": {"type": "integer", "minimum": 1, "maximum": 100},
+        "max_quote_bytes": {"type": "integer", "minimum": 32, "maximum": 16384}
+      }
+    },
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "safe_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

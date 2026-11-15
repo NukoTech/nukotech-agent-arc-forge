@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/adapter-approval.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "approval_id", "plan_digest", "approver", "decision", "expires_at", "nonce"],
+  "properties": {
+    "schema_version": {"const": "hive.adapter-approval.v1"},
+    "approval_id": {"$ref": "#/$defs/safe_id"},
+    "plan_digest": {"$ref": "#/$defs/sha256"},
+    "approver": {"$ref": "#/$defs/identity"},
+    "decision": {"enum": ["APPROVED", "REJECTED"]},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "nonce": {"type": "string", "minLength": 16, "maxLength": 256},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {
+    "safe_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["persona_id", "surface_id", "machine_id", "project_id", "app_actor"],
+      "properties": {
+        "persona_id": {"$ref": "#/$defs/safe_id"}, "surface_id": {"$ref": "#/$defs/safe_id"},
+        "machine_id": {"$ref": "#/$defs/safe_id"}, "project_id": {"$ref": "#/$defs/safe_id"},
+        "app_actor": {"$ref": "#/$defs/safe_id"}
+      }
+    },
+    "signature": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "key_id", "value"],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{24}$"},
+        "value": {"type": "string", "minLength": 80}
+      }
+    }
+  }
+}

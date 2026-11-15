@@ -1,0 +1,26 @@
+filters:
+  and:
+    - 'file.ext == "md"'
+    - 'file.inFolder("30-Durable-Facts")'
+views:
+  - type: table
+    name: Durable facts
+    filters:
+      and:
+        - 'record_type == "DURABLE_FACT"'
+        - 'status == "CURRENT"'
+    order:
+      - file.name
+      - note.fact_key
+      - note.confidence
+      - note.target_moc
+      - note.promoted_at
+properties:
+  note.fact_key:
+    displayName: Fact key
+  note.confidence:
+    displayName: Confidence
+  note.target_moc:
+    displayName: MOC
+  note.promoted_at:
+    displayName: Promoted

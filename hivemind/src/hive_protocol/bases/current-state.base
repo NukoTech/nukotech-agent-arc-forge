@@ -1,0 +1,22 @@
+filters:
+  and:
+    - 'file.ext == "md"'
+    - 'status == "CURRENT"'
+views:
+  - type: table
+    name: Current state
+    order:
+      - file.name
+      - note.fact_key
+      - note.value
+      - note.promoted_at
+      - note.source_ref
+properties:
+  note.fact_key:
+    displayName: Fact key
+  note.value:
+    displayName: Current value
+  note.promoted_at:
+    displayName: Promoted
+  note.source_ref:
+    displayName: Source

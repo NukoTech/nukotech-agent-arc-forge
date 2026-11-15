@@ -1,0 +1,98 @@
+schema: nukotech.agent_arc.registry.v1
+registry_version: 0.3.1-alpha.1
+product:
+  id: nukotech-agent-arc
+  status: LOCAL_COMPOSER_ALPHA
+components:
+  - schema: nukotech.agent_arc.component.v1
+    id: prompt-strategy-selector
+    version: 0.1.0
+    type: skill
+    sha256: 3fe7bbd780cd82039a0a2bb14714f194cc94ac12bf8094a511f7c535ba7a95fd
+    path: components/prompt-strategy-selector/SKILL.md
+    license: MIT
+    provenance:
+      source: clean-room-first-party-synthesis
+      owner: example
+    dependencies:
+      - context-governance
+    conflicts: []
+    capabilities:
+      - select_prompt_strategy
+    side_effects: []
+    stop_conditions:
+      - missing_task_or_authority
+      - unverifiable_evidence
+      - output_cannot_be_checked
+    rollback:
+      - remove_candidate_package
+  - schema: nukotech.agent_arc.component.v1
+    id: organization-context-bootstrap
+    version: 0.1.0
+    type: loop
+    sha256: 7b72b096d54a6635f5045c705b6c28fa1475134bb3f98caf8e866b4f0c3fa873
+    path: components/organization-context-bootstrap.md
+    license: MIT
+    provenance:
+      source: clean-room-first-party-synthesis
+      owner: example
+    dependencies:
+      - prompt-strategy-selector
+      - context-governance
+    conflicts: []
+    capabilities:
+      - bootstrap_organization_context
+    side_effects: []
+    stop_conditions:
+      - operator_stop
+      - question_exceeds_allowed_modules
+      - sensitive_data_is_unnecessary
+      - promotion_or_external_action_requested
+    rollback:
+      - remove_staged_context_candidates
+      - restore_prior_manifest_pointer
+  - schema: nukotech.agent_arc.component.v1
+    id: context-manifest
+    version: 0.1.0
+    type: graph_or_memory_binding
+    sha256: a1bd8c515ad0f249818eeeb31330d7d22dbcf7aefcbd1e6f33bf312e4c1258ba
+    path: components/context-manifest.md
+    license: MIT
+    provenance:
+      source: clean-room-first-party-design
+      owner: example
+    dependencies:
+      - organization-context-bootstrap
+      - context-governance
+    conflicts: []
+    capabilities:
+      - stage_context_candidate
+    side_effects: []
+    stop_conditions:
+      - candidate_identity_missing
+      - candidate_hash_mismatch
+      - approval_reference_missing_for_promotion
+    rollback:
+      - remove_candidate_manifest_and_graph
+  - schema: nukotech.agent_arc.component.v1
+    id: context-governance
+    version: 0.1.0
+    type: governance_or_harness
+    sha256: 118ecabf22f59162b9aea04be39bc1b56bfbeb48571445e963de0289a60371fd
+    path: components/context-governance.md
+    license: MIT
+    provenance:
+      source: clean-room-first-party-design
+      owner: example
+    dependencies: []
+    conflicts: []
+    capabilities:
+      - govern_context
+    side_effects: []
+    stop_conditions:
+      - tenant_or_project_mismatch
+      - missing_provenance_or_freshness
+      - sensitive_scope_violation
+      - authorization_boundary
+    rollback:
+      - remove_only_staged_candidate_artifacts

@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/agent-session.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "session_id", "run_id", "workflow_sha256", "step_id",
+    "attempt", "claim_event_id", "tenant_id", "project_id", "agent", "state",
+    "heartbeat_at", "progress", "resources", "outputs", "recorded_at", "signature"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.agent-session.v1"},
+    "session_id": {"type": "string", "format": "uuid"},
+    "run_id": {"type": "string", "format": "uuid"},
+    "workflow_sha256": {"$ref": "#/$defs/sha256"},
+    "step_id": {"$ref": "#/$defs/safe_id"},
+    "attempt": {"type": "integer", "minimum": 1, "maximum": 1000},
+    "claim_event_id": {"type": "string", "format": "uuid"},
+    "tenant_id": {"$ref": "#/$defs/safe_id"},
+    "project_id": {"$ref": "#/$defs/safe_id"},
+    "agent": {"$ref": "#/$defs/identity"},
+    "state": {"enum": ["ACTIVE", "COMPLETED", "FAILED", "ABANDONED", "CANCELLED"]},
+    "heartbeat_at": {"type": "string", "format": "date-time"},
+    "progress": {
+      "type": "object", "additionalProperties": false,
+      "required": ["completed_units", "total_units"],
+      "properties": {
+        "completed_units": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+        "total_units": {"type": "integer", "minimum": 1, "maximum": 1000000000}
+      }
+    },
+    "resources": {
+      "type": "object", "additionalProperties": false,
+      "required": ["tokens_used", "cost_microunits", "peak_memory_mb"],
+      "properties": {
+        "tokens_used": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+        "cost_microunits": {"type": "integer", "minimum": 0, "maximum": 1000000000000},
+        "peak_memory_mb": {"type": "integer", "minimum": 0, "maximum": 1048576}
+      }
+    },
+    "outputs": {
+      "type": "array", "maxItems": 128,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["name", "type", "sha256", "evidence_refs"],
+        "properties": {
+          "name": {"$ref": "#/$defs/safe_id"},
+          "type": {"type": "string", "pattern": "^[A-Za-z0-9.+_-]+/[A-Za-z0-9.+_-]+$"},
+          "sha256": {"$ref": "#/$defs/sha256"},
+          "evidence_refs": {
+            "type": "array", "uniqueItems": true, "maxItems": 256,
+            "items": {"type": "string", "minLength": 1, "maxLength": 256}
+          }
+        }
+      }
+    },
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {
+    "safe_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["actor_id", "persona_id", "surface_id", "machine_id", "project_id", "app_actor", "key_id"],
+      "properties": {
+        "actor_id": {"$ref": "#/$defs/safe_id"},
+        "persona_id": {"$ref": "#/$defs/safe_id"},
+        "surface_id": {"$ref": "#/$defs/safe_id"},
+        "machine_id": {"$ref": "#/$defs/safe_id"},
+        "project_id": {"$ref": "#/$defs/safe_id"},
+        "app_actor": {"$ref": "#/$defs/safe_id"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[a-f0-9]{24}$"}
+      }
+    },
+    "signature": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "key_id", "value"],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[a-f0-9]{24}$"},
+        "value": {"type": "string", "minLength": 32}
+      }
+    }
+  }
+}

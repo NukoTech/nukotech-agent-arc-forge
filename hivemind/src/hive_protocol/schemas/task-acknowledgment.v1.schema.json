@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/task-acknowledgment.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "ack_id", "task_id", "tenant_id", "workspace_id", "recipient_agent",
+    "outcome", "changed", "state_sha256", "acknowledged_at", "nonce", "signature"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.task-acknowledgment.v1"},
+    "ack_id": {"type": "string", "format": "uuid"},
+    "task_id": {"type": "string", "format": "uuid"},
+    "tenant_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "workspace_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "recipient_agent": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "outcome": {"enum": ["APPLIED", "REFUSED", "NOOP"]},
+    "changed": {"type": "boolean"},
+    "state_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "acknowledged_at": {"type": "string", "format": "date-time"},
+    "nonce": {"type": "string", "pattern": "^[A-Za-z0-9_-]{16,128}$"},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {
+    "signature": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "key_id", "value"],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[a-f0-9]{24}$"},
+        "value": {"type": "string", "minLength": 32}
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "schema_version": "hive.repository-roster.v1",
+  "repositories": [
+    {"id":"hive-canonical-main","repository":"example-org/hivemind","ref":"refs/heads/main","role":"forward-canonical-base","required":true,"transport":"github-app"},
+    {"id":"hive-prototype-evidence","repository":"example-org/hive-prototype","ref":"refs/heads/main","role":"immutable-operational-prototype-evidence","required":true,"transport":"fixed-read-evidence","expected_commit":"0000000000000000000000000000000000000001","evidence_observed_at":"2026-01-01T00:00:00Z","evidence_max_age_hours":24},
+    {"id":"vault","repository":"example-org/hive-vault","ref":"refs/heads/main","role":"durable-knowledge-component","required":true,"transport":"github-app"},
+    {"id":"vault-staging","repository":"example-org/hive-vault-staging","ref":"refs/heads/main","role":"vault-staging-component","required":true,"transport":"github-app"},
+    {"id":"retired-lineage","repository":"example-org/retired-hive","ref":"refs/heads/main","role":"disconnected-empty-lineage-candidate","required":false,"transport":"github-app","expected_absent":true}
+  ]
+}

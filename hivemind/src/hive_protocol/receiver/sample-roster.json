@@ -1,0 +1,50 @@
+{
+  "LeadA": [
+    "Director",
+    "hive-lab-host",
+    "LeadA",
+    "DIRECTOR"
+  ],
+  "BuildA": [
+    "Builder",
+    "hive-lab-host",
+    "LeadA",
+    "BUILDER_SUBORDINATE_TO_LEADA"
+  ],
+  "LeadC": [
+    "Director",
+    "node-c",
+    "LeadC",
+    "DIRECTOR"
+  ],
+  "BuildC": [
+    "Builder",
+    "node-c",
+    "LeadC",
+    "BUILDER_SUBORDINATE_TO_LEADC"
+  ],
+  "LeadB": [
+    "Director",
+    "node-b",
+    "LeadB",
+    "DIRECTOR"
+  ],
+  "BuildB": [
+    "Builder",
+    "node-b",
+    "LeadB",
+    "BUILDER_SUBORDINATE_TO_LEADB"
+  ],
+  "LeadP": [
+    "Director",
+    "node-phone",
+    "LeadP",
+    "HELD"
+  ],
+  "BuildP": [
+    "Builder",
+    "node-phone",
+    "LeadP",
+    "HELD"
+  ]
+}

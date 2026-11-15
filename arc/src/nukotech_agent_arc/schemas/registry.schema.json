@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/agent-arc/registry-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "registry_version", "product", "components"],
+  "properties": {
+    "schema": {"const": "nukotech.agent_arc.registry.v1"},
+    "registry_version": {"type": "string", "minLength": 1},
+    "product": {"type": "object", "required": ["id", "status"]},
+    "components": {
+      "type": "array",
+      "items": {"$ref": "component.schema.json"}
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/agent-arc/security-decision-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["decision", "code", "reasons", "evidence_hash", "provider", "stage"],
+  "properties": {
+    "decision": {"enum": ["allow", "deny", "hold", "escalate"]},
+    "code": {"type": "string", "minLength": 1},
+    "reasons": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "provider": {"type": "string", "minLength": 1},
+    "stage": {"enum": ["pre_compose", "pre_package", "pre_install", "pre_execute", "post_execute"]}
+  }
+}

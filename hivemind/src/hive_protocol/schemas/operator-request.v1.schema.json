@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/operator-request.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "tenant_id",
+    "project_id",
+    "action",
+    "expected_version",
+    "idempotency_key",
+    "input"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.operator-request.v1"},
+    "request_id": {"type": "string", "format": "uuid"},
+    "tenant_id": {"$ref": "#/$defs/safe_id"},
+    "project_id": {"$ref": "#/$defs/safe_id"},
+    "action": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[.][a-z][a-z0-9]*){1,7}$",
+      "minLength": 3,
+      "maxLength": 128
+    },
+    "expected_version": {"$ref": "#/$defs/object_version"},
+    "idempotency_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{16,128}$"
+    },
+    "input": {
+      "type": "object",
+      "maxProperties": 64
+    }
+  },
+  "$defs": {
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+    },
+    "object_version": {
+      "oneOf": [
+        {"const": "ABSENT"},
+        {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      ]
+    }
+  }
+}

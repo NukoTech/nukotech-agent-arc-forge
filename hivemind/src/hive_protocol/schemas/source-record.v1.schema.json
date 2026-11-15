@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/source-record.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "source_id", "tenant_id", "project_id",
+    "privacy_class", "original_asset_path", "original_sha256",
+    "original_size_bytes", "normalized_text_path", "normalized_sha256",
+    "media_type", "parser", "transformations", "capture_ids", "anchors",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.source-record.v1"},
+    "source_id": {"$ref": "#/$defs/safe_id"},
+    "tenant_id": {"$ref": "#/$defs/safe_id"},
+    "project_id": {"$ref": "#/$defs/safe_id"},
+    "privacy_class": {"enum": ["PROJECT_PRIVATE", "CUSTOMER_PRIVATE", "PERSONA_PRIVATE", "NON_PRIVATE"]},
+    "original_asset_path": {"$ref": "#/$defs/path"},
+    "original_sha256": {"$ref": "#/$defs/sha256"},
+    "original_size_bytes": {"type": "integer", "minimum": 0, "maximum": 1073741824},
+    "normalized_text_path": {"oneOf": [{"$ref": "#/$defs/path"}, {"type": "null"}]},
+    "normalized_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+    "media_type": {"type": "string", "pattern": "^[A-Za-z0-9.+-]+/[A-Za-z0-9.+-]+$", "maxLength": 128},
+    "parser": {"$ref": "#/$defs/parser"},
+    "transformations": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 64,
+      "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,63}$"}
+    },
+    "capture_ids": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/safe_id"}
+    },
+    "anchors": {
+      "type": "array",
+      "maxItems": 100000,
+      "items": {"$ref": "#/$defs/anchor"}
+    },
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "safe_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._:/-]{1,512}$"},
+    "parser": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parser_id", "version"],
+      "properties": {
+        "parser_id": {"$ref": "#/$defs/safe_id"},
+        "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"}
+      }
+    },
+    "anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anchor_id", "source_id", "source_sha256", "normalized_sha256",
+        "quote", "quote_sha256", "char_start", "char_end", "byte_start",
+        "byte_end", "locator"
+      ],
+      "properties": {
+        "anchor_id": {"$ref": "#/$defs/safe_id"},
+        "source_id": {"$ref": "#/$defs/safe_id"},
+        "source_sha256": {"$ref": "#/$defs/sha256"},
+        "normalized_sha256": {"$ref": "#/$defs/sha256"},
+        "quote": {"type": "string", "minLength": 1, "maxLength": 16384},
+        "quote_sha256": {"$ref": "#/$defs/sha256"},
+        "char_start": {"type": "integer", "minimum": 0},
+        "char_end": {"type": "integer", "minimum": 1},
+        "byte_start": {"type": "integer", "minimum": 0},
+        "byte_end": {"type": "integer", "minimum": 1},
+        "locator": {"$ref": "#/$defs/locator"}
+      }
+    },
+    "locator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {"enum": ["line", "page", "time", "region", "byte"]},
+        "line_start": {"type": "integer", "minimum": 1},
+        "line_end": {"type": "integer", "minimum": 1},
+        "page": {"type": "integer", "minimum": 1},
+        "time_start_ms": {"type": "integer", "minimum": 0},
+        "time_end_ms": {"type": "integer", "minimum": 0},
+        "x": {"type": "number", "minimum": 0},
+        "y": {"type": "number", "minimum": 0},
+        "width": {"type": "number", "exclusiveMinimum": 0},
+        "height": {"type": "number", "exclusiveMinimum": 0},
+        "original_byte_start": {"type": "integer", "minimum": 0},
+        "original_byte_end": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

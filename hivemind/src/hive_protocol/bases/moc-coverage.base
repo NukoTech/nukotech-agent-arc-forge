@@ -1,0 +1,22 @@
+filters:
+  and:
+    - 'file.ext == "md"'
+    - 'file.inFolder("00-MOC")'
+views:
+  - type: table
+    name: MOC coverage
+    order:
+      - file.name
+      - note.moc_id
+      - note.coverage_status
+      - note.linked_records
+      - note.last_verified_at
+properties:
+  note.moc_id:
+    displayName: MOC
+  note.coverage_status:
+    displayName: Coverage
+  note.linked_records:
+    displayName: Linked records
+  note.last_verified_at:
+    displayName: Last verified

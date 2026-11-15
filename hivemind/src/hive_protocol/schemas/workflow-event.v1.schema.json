@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/workflow-event.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "event_id", "run_id", "workflow_sha256", "tenant_id",
+    "project_id", "sequence", "event_type", "step_id", "attempt", "actor",
+    "payload", "payload_sha256", "previous_event_sha256", "recorded_at", "signature"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.workflow-event.v1"},
+    "event_id": {"type": "string", "format": "uuid"},
+    "run_id": {"type": "string", "format": "uuid"},
+    "workflow_sha256": {"$ref": "#/$defs/sha256"},
+    "tenant_id": {"$ref": "#/$defs/safe_id"},
+    "project_id": {"$ref": "#/$defs/safe_id"},
+    "sequence": {"type": "integer", "minimum": 1, "maximum": 1000000000},
+    "event_type": {
+      "enum": [
+        "RUN_STARTED", "READINESS_EVALUATED", "CONFLICT_DETECTED",
+        "APPROVAL_RECORDED", "STEP_ASSIGNED", "STEP_CLAIMED",
+        "SESSION_STARTED", "SESSION_HEARTBEAT", "STEP_ACKNOWLEDGED",
+        "STEP_PROGRESS", "STEP_OUTPUT", "STEP_FAILED", "STEP_RETRY_CREATED",
+        "SESSION_ABANDONED", "CLAIM_RELEASED", "COMPENSATION_STARTED",
+        "COMPENSATION_COMPLETED", "ROLLBACK_STARTED", "ROLLBACK_COMPLETED",
+        "STEP_COMPLETED", "RUN_COMPLETED", "RUN_CANCELLED"
+      ]
+    },
+    "step_id": {"anyOf": [{"$ref": "#/$defs/safe_id"}, {"type": "null"}]},
+    "attempt": {"anyOf": [{"type": "integer", "minimum": 1, "maximum": 1000}, {"type": "null"}]},
+    "actor": {"$ref": "#/$defs/identity"},
+    "payload": {"type": "object"},
+    "payload_sha256": {"$ref": "#/$defs/sha256"},
+    "previous_event_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {
+    "safe_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["actor_id", "persona_id", "surface_id", "machine_id", "project_id", "app_actor", "key_id"],
+      "properties": {
+        "actor_id": {"$ref": "#/$defs/safe_id"},
+        "persona_id": {"$ref": "#/$defs/safe_id"},
+        "surface_id": {"$ref": "#/$defs/safe_id"},
+        "machine_id": {"$ref": "#/$defs/safe_id"},
+        "project_id": {"$ref": "#/$defs/safe_id"},
+        "app_actor": {"$ref": "#/$defs/safe_id"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[a-f0-9]{24}$"}
+      }
+    },
+    "signature": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "key_id", "value"],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[a-f0-9]{24}$"},
+        "value": {"type": "string", "minLength": 32}
+      }
+    }
+  }
+}

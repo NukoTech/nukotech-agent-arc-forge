@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/identity-context.v1.schema.json",
+  "title": "Hive identity and authority context v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "persona",
+    "surface",
+    "agent_worker",
+    "model_runtime",
+    "machine_node",
+    "domain_product_project",
+    "governance_seat",
+    "memory_vault_namespace",
+    "capability_authority"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.identity-context.v1"},
+    "persona": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "continuity_id", "governance_role"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "continuity_id": {"type": "string", "minLength": 1},
+        "governance_role": {"enum": ["QUEEN", "NODE_PERSONA", "NONE"]}
+      }
+    },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "channel", "persona_continuity_id", "experience_namespace"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "channel": {"type": "string", "minLength": 1},
+        "persona_continuity_id": {"type": "string", "minLength": 1},
+        "experience_namespace": {"type": "string", "pattern": "^[A-Za-z0-9._/-]+$"}
+      }
+    },
+    "agent_worker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "ephemeral", "acts_for_persona"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["ORCHESTRATOR", "DIRECTOR", "BUILDER", "OBSERVER", "CONSUMER"]},
+        "ephemeral": {"type": "boolean"},
+        "acts_for_persona": {"type": "string", "minLength": 1}
+      }
+    },
+    "model_runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "runtime", "provider"],
+      "properties": {
+        "model": {"type": "string", "minLength": 1},
+        "runtime": {"type": "string", "minLength": 1},
+        "provider": {"type": "string", "minLength": 1}
+      }
+    },
+    "machine_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["machine", "node_id", "node_class", "environment"],
+      "properties": {
+        "machine": {"type": "string", "minLength": 1},
+        "node_id": {"type": "string", "minLength": 1},
+        "node_class": {"enum": ["PRIME", "INTERNAL", "CUSTOMER", "LAB"]},
+        "environment": {"enum": ["LAB", "STAGING", "PRODUCTION"]}
+      }
+    },
+    "domain_product_project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain", "product", "project"],
+      "properties": {
+        "domain": {"type": "string", "minLength": 1},
+        "product": {"type": "string", "minLength": 1},
+        "project": {"type": "string", "minLength": 1}
+      }
+    },
+    "governance_seat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["persona_seat", "worker_seat", "grant_ref"],
+      "properties": {
+        "persona_seat": {"type": "string", "minLength": 1},
+        "worker_seat": {"type": "string", "minLength": 1},
+        "grant_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "memory_vault_namespace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["vault", "tier", "namespace", "raw_memory_in_github"],
+      "properties": {
+        "vault": {"type": "string", "minLength": 1},
+        "tier": {"enum": ["PERSONA_PRIVATE", "SURFACE_PRIVATE", "PROJECT_PRIVATE", "CUSTOMER_PRIVATE", "PRIME_SHARED", "NON_PRIVATE_RECEIPTS"]},
+        "namespace": {"type": "string", "pattern": "^[A-Za-z0-9._/-]+$"},
+        "raw_memory_in_github": {"const": false}
+      }
+    },
+    "capability_authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authorization_ref", "capabilities", "enforcement", "expires_at"],
+      "properties": {
+        "authorization_ref": {"type": "string", "minLength": 1},
+        "capabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z0-9_.:-]+$"}
+        },
+        "enforcement": {"enum": ["LOCAL_FAIL_CLOSED", "OBSERVATION_ONLY"]},
+        "expires_at": {"type": "string", "format": "date-time"}
+      }
+    }
+  }
+}

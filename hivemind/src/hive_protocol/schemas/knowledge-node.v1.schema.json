@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/knowledge-node.v1.schema.json",
+  "title": "Hive knowledge node v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "node_id", "tenant_id", "project_id", "experience_scope", "node_type", "title", "relative_path", "markdown_sha256", "claim", "evidence", "trust_state", "source_candidate_id", "review_decision_id", "supersedes", "revokes", "retention_until", "created_at"],
+  "properties": {
+    "schema_version": {"const": "hive.knowledge-node.v1"},
+    "node_id": {"$ref": "#/$defs/node_id"},
+    "tenant_id": {"$ref": "#/$defs/id"},
+    "project_id": {"$ref": "#/$defs/id"},
+    "experience_scope": {"$ref": "#/$defs/scope"},
+    "node_type": {"enum": ["PERSON", "ORGANIZATION", "PROJECT", "TOPIC", "ASSET", "DECISION", "COMMITMENT", "BLOCKER", "OUTCOME", "CORRECTION", "RELATIONSHIP", "EXPERIENCE", "CONTRADICTION", "STALE_KNOWLEDGE", "MISSING_CONTEXT", "REVOCATION", "NOTE", "MOC"]},
+    "title": {"type": "string", "minLength": 1, "maxLength": 512},
+    "relative_path": {"type": "string", "pattern": "^prime/[A-Za-z0-9._/-]+\\.md$"},
+    "markdown_sha256": {"$ref": "#/$defs/sha256"},
+    "claim": {"$ref": "#/$defs/claim"},
+    "evidence": {"type": "array", "maxItems": 256, "uniqueItems": true, "items": {"$ref": "#/$defs/evidence"}},
+    "trust_state": {"enum": ["REVIEWED", "HUMAN_AUTHORED"]},
+    "source_candidate_id": {"type": ["string", "null"], "pattern": "^memory:[0-9a-f]{64}$"},
+    "review_decision_id": {"type": ["string", "null"], "pattern": "^review:[0-9a-f]{64}$"},
+    "supersedes": {"type": ["string", "null"], "pattern": "^node:[0-9a-f]{64}$"},
+    "revokes": {"type": ["string", "null"], "pattern": "^node:[0-9a-f]{64}$"},
+    "retention_until": {"type": ["string", "null"], "format": "date-time"},
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "node_id": {"type": "string", "pattern": "^node:[0-9a-f]{64}$"},
+    "scope": {"type": "object", "additionalProperties": false, "required": ["kind", "owner_id"], "properties": {"kind": {"enum": ["PERSONA", "SURFACE", "DOMAIN", "SHARED"]}, "owner_id": {"$ref": "#/$defs/id"}}},
+    "claim": {"type": "object", "additionalProperties": false, "required": ["key", "value", "narrative"], "properties": {"key": {"$ref": "#/$defs/id"}, "value": {}, "narrative": {"type": "string", "minLength": 1, "maxLength": 8192}}},
+    "evidence": {"type": "object", "additionalProperties": false, "required": ["source_id", "anchor_id", "source_sha256", "normalized_sha256"], "properties": {"source_id": {"$ref": "#/$defs/id"}, "anchor_id": {"$ref": "#/$defs/id"}, "source_sha256": {"$ref": "#/$defs/sha256"}, "normalized_sha256": {"$ref": "#/$defs/sha256"}}}
+  }
+}

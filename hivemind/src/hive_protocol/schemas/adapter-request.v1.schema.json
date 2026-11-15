@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/adapter-request.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "request_id", "adapter_id", "adapter_version", "sender",
+    "project_id", "capability_id", "data_classification", "authorization_ref",
+    "evidence_sha256", "payload", "nonce", "expires_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.adapter-request.v1"},
+    "request_id": {"$ref": "#/$defs/safe_id"},
+    "adapter_id": {"$ref": "#/$defs/safe_id"},
+    "adapter_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"},
+    "sender": {"$ref": "#/$defs/identity"},
+    "project_id": {"$ref": "#/$defs/safe_id"},
+    "capability_id": {"$ref": "#/$defs/safe_id"},
+    "data_classification": {"enum": ["NON_PRIVATE", "PROJECT_PRIVATE", "SURFACE_PRIVATE", "PERSONA_PRIVATE", "CUSTOMER_PRIVATE", "PRIME_SHARED"]},
+    "authorization_ref": {"type": "string", "minLength": 1, "maxLength": 512},
+    "evidence_sha256": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/sha256"}},
+    "payload": {"type": "object"},
+    "nonce": {"type": "string", "minLength": 16, "maxLength": 256},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {
+    "safe_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["persona_id", "surface_id", "machine_id", "project_id", "app_actor"],
+      "properties": {
+        "persona_id": {"$ref": "#/$defs/safe_id"}, "surface_id": {"$ref": "#/$defs/safe_id"},
+        "machine_id": {"$ref": "#/$defs/safe_id"}, "project_id": {"$ref": "#/$defs/safe_id"},
+        "app_actor": {"$ref": "#/$defs/safe_id"}
+      }
+    },
+    "signature": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "key_id", "value"],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{24}$"},
+        "value": {"type": "string", "minLength": 80}
+      }
+    }
+  }
+}

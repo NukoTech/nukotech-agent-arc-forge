@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/agent-arc/package-signature-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "algorithm",
+    "key_id",
+    "manifest_sha256",
+    "receipt_sha256",
+    "signature"
+  ],
+  "properties": {
+    "schema": {"const": "nukotech.agent_arc.package_signature.v1"},
+    "algorithm": {"const": "Ed25519"},
+    "key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{64}$"},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "signature": {"type": "string", "minLength": 1}
+  }
+}

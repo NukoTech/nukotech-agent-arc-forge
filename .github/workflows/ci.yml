@@ -1,0 +1,184 @@
+# General pull-request and main-branch checks for this repository:
+# tests (Python 3.11/3.12), package (wheel install), demo (documented example).
+# Does not duplicate security.yml or arc-gates.yml jobs:
+# gitleaks, denylist, denylist-tests, license-check, author-email, arc-gates.
+# Action SHAs: see ci/PINNED_SHAS.md (verified 2026-11-14 via gh api).
+
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: tests (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - name: Check out this repository (clean workspace)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          clean: true
+          persist-credentials: false
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Guard against a stray top-level build/ directory
+        run: |
+          set -euo pipefail
+          if [ -e build ]; then
+            echo "Refusing to run: a top-level 'build' path is present and can shadow the PyPA 'build' package."
+            ls -ld build
+            exit 1
+          fi
+
+      - name: Tests without the signing extra
+        working-directory: arc
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -e '.[test]'
+          python -m pytest --tb=short --junitxml="${RUNNER_TEMP}/junit-unsigned.xml"
+          python "${GITHUB_WORKSPACE}/ci/scripts/assert_pytest_counts.py" \
+            "${RUNNER_TEMP}/junit-unsigned.xml" 67 11
+
+      - name: Tests with the signing extra
+        working-directory: arc
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -e '.[test,signing]'
+          python -m pytest --tb=short --junitxml="${RUNNER_TEMP}/junit-signing.xml"
+          python "${GITHUB_WORKSPACE}/ci/scripts/assert_pytest_counts.py" \
+            "${RUNNER_TEMP}/junit-signing.xml" 78 0
+
+  package:
+    name: package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out this repository (clean workspace)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          clean: true
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+
+      - name: Guard against a stray top-level build/ directory
+        run: |
+          set -euo pipefail
+          if [ -e build ]; then
+            echo "Refusing to run: a top-level 'build' path is present and can shadow the PyPA 'build' package."
+            ls -ld build
+            exit 1
+          fi
+
+      - name: Build sdist and wheel
+        working-directory: arc
+        run: |
+          set -euo pipefail
+          if [ -e build ]; then
+            echo "Refusing to run: arc/build is present and can shadow the PyPA 'build' package."
+            ls -ld build
+            exit 1
+          fi
+          python -m pip install --disable-pip-version-check "build==1.6.1"
+          python -m build
+          shopt -s nullglob
+          wheels=(dist/nukotech_agent_arc-*.whl)
+          sdists=(dist/nukotech_agent_arc-*.tar.gz)
+          test "${#wheels[@]}" -eq 1
+          test "${#sdists[@]}" -eq 1
+          echo "WHEEL=${wheels[0]}" >> "$GITHUB_ENV"
+
+      - name: Install the wheel into a clean venv and run --help
+        working-directory: arc
+        run: |
+          set -euo pipefail
+          python -m venv "${RUNNER_TEMP}/pkg-venv"
+          "${RUNNER_TEMP}/pkg-venv/bin/python" -m pip install --disable-pip-version-check "${WHEEL}"
+          "${RUNNER_TEMP}/pkg-venv/bin/agent-arc" --help
+          "${RUNNER_TEMP}/pkg-venv/bin/python" -m nukotech_agent_arc --help
+
+  demo:
+    name: demo
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out this repository (clean workspace)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          clean: true
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+
+      - name: Guard against a stray top-level build/ directory
+        run: |
+          set -euo pipefail
+          if [ -e build ]; then
+            echo "Refusing to run: a top-level 'build' path is present and can shadow the PyPA 'build' package."
+            ls -ld build
+            exit 1
+          fi
+
+      - name: Install Agent Arc and smoke the documented marketing-operator example
+        working-directory: arc
+        run: |
+          set -euo pipefail
+          python -m venv "${RUNNER_TEMP}/demo-venv"
+          "${RUNNER_TEMP}/demo-venv/bin/python" -m pip install --disable-pip-version-check .
+          ARC="${RUNNER_TEMP}/demo-venv/bin/agent-arc"
+          EXAMPLE=examples/marketing-operator
+          OUT="${RUNNER_TEMP}/agent-arc-example-output"
+
+          "${ARC}" validate --recipe "${EXAMPLE}/recipe.yaml" --registry "${EXAMPLE}/registry.yaml"
+
+          "${ARC}" compose \
+            --recipe "${EXAMPLE}/recipe.yaml" \
+            --registry "${EXAMPLE}/registry.yaml" \
+            --authorization "${EXAMPLE}/authorization.yaml" \
+            --component-root "${EXAMPLE}" \
+            --output "${OUT}"
+
+          "${ARC}" verify-package \
+            --package "${OUT}/marketing-operator-1.0.0.zip" \
+            --manifest "${OUT}/marketing-operator-1.0.0.MANIFEST.sha256"
+
+          REFUSE_OUT="${RUNNER_TEMP}/agent-arc-prohibited-output"
+          set +e
+          "${ARC}" compose \
+            --recipe "${EXAMPLE}/prohibited-recipe.yaml" \
+            --registry "${EXAMPLE}/registry.yaml" \
+            --authorization "${EXAMPLE}/authorization.yaml" \
+            --component-root "${EXAMPLE}" \
+            --output "${REFUSE_OUT}"
+          status=$?
+          set -e
+          test "${status}" -eq 2
+          test -f "${REFUSE_OUT}/refusal-receipt.json"
+          shopt -s nullglob
+          zips=("${REFUSE_OUT}"/*.zip)
+          test "${#zips[@]}" -eq 0

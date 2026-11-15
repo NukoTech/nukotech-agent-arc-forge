@@ -1,0 +1,25 @@
+filters:
+  and:
+    - 'file.ext == "md"'
+    - 'file.inFolder("40-Snapshots")'
+views:
+  - type: table
+    name: Agent and project snapshots
+    filters:
+      and:
+        - 'record_type == "SNAPSHOT"'
+    order:
+      - file.name
+      - note.lane_kind
+      - note.lane_owner
+      - note.occurred_at
+      - note.target_moc
+properties:
+  note.lane_kind:
+    displayName: Lane
+  note.lane_owner:
+    displayName: Owner
+  note.occurred_at:
+    displayName: Occurred
+  note.target_moc:
+    displayName: MOC

@@ -1,0 +1,66 @@
+# HiveMind pytest gate for this repository.
+# Does not duplicate security.yml, arc-gates.yml, or the Arc jobs in ci.yml.
+# Action SHAs: see ci/PINNED_SHAS.md (verified 2026-11-14 via gh api).
+
+name: hivemind-tests
+
+on:
+  pull_request:
+    paths:
+      - "hivemind/**"
+      - ".github/workflows/hivemind-tests.yml"
+  push:
+    branches: [main]
+    paths:
+      - "hivemind/**"
+      - ".github/workflows/hivemind-tests.yml"
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hivemind-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  hivemind-tests:
+    name: hivemind-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      HIVE_CYCLE2_DEVELOPMENT: '1'
+    steps:
+      - name: Check out this repository (clean workspace)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          clean: true
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.11"
+
+      - name: Guard against a stray top-level build/ directory
+        run: |
+          set -euo pipefail
+          if [ -e build ]; then
+            echo "Refusing to run: a top-level 'build' path is present and can shadow the PyPA 'build' package."
+            ls -ld build
+            exit 1
+          fi
+
+      - name: Install product and pinned test tools
+        working-directory: hivemind
+        run: python -m pip install --disable-pip-version-check -e . build==1.4.0 pytest==9.0.2 setuptools==84.0.0
+
+      - name: Run hivemind tests
+        working-directory: hivemind
+        run: |
+          set -euo pipefail
+          python -m pytest -q --tb=short --junitxml="${RUNNER_TEMP}/junit-hivemind.xml"
+          python "${GITHUB_WORKSPACE}/ci/scripts/assert_pytest_counts.py" \
+            "${RUNNER_TEMP}/junit-hivemind.xml" 924 0

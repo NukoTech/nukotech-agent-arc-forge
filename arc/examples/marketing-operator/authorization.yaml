@@ -1,0 +1,12 @@
+schema: nukotech.agent_arc.authorization.v1
+id: community-example-draft-only
+subject: marketing-operator
+allowed_capabilities:
+  - draft_content
+allowed_side_effects: []
+prohibited_effects:
+  - public_publish
+  - external_send
+  - spend_money
+  - delete_data
+

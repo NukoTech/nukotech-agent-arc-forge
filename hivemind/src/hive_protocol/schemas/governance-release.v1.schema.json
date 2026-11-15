@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/governance-release.v1.schema.json",
+  "title": "Hive governance release v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "release_id", "version", "channel", "repository", "commit", "tree", "issued_at", "review", "artifacts", "rollback", "contains_raw_memory", "contains_credentials", "signature"],
+  "properties": {
+    "schema_version": {"const": "hive.governance-release.v1"},
+    "release_id": {"type": "string", "format": "uuid"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+-lab\\.[0-9]+$"},
+    "channel": {"const": "LAB"},
+    "repository": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"},
+    "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "review": {"type": "object", "additionalProperties": false, "required": ["status", "reviewer_key_id", "authorization_ref"], "properties": {"status": {"const": "APPROVED_FOR_LAB_STAGING"}, "reviewer_key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{24}$"}, "authorization_ref": {"type": "string", "minLength": 1}}},
+    "artifacts": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "size", "classification"], "properties": {"path": {"type": "string", "pattern": "^(schemas|bases)/[A-Za-z0-9._/-]+$"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "size": {"type": "integer", "minimum": 1}, "classification": {"const": "NON_PRIVATE_GOVERNANCE"}}}},
+    "rollback": {"type": "object", "additionalProperties": false, "required": ["previous_version", "action"], "properties": {"previous_version": {"type": ["string", "null"]}, "action": {"const": "RESTORE_PREVIOUS_PIN_AND_REMOVE_STAGED_RELEASE"}}},
+    "contains_raw_memory": {"const": false},
+    "contains_credentials": {"const": false},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {"signature": {"type": "object", "additionalProperties": false, "required": ["algorithm", "key_id", "value"], "properties": {"algorithm": {"const": "Ed25519"}, "key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{24}$"}, "value": {"type": "string", "pattern": "^[A-Za-z0-9_-]{80,128}$"}}}}
+}

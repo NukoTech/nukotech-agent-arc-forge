@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schema/hive/cycle2-receipt.v1.json",
+  "type": "object",
+  "required": ["schema_version", "receipt_id", "task_id", "event", "actor", "recipient", "state_before", "state_after", "version", "nonce", "artifact_refs", "result", "signature"],
+  "properties": {
+    "schema_version": {"const": "hive.cycle2.receipt.v1"},
+    "receipt_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "task_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "event": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "actor": {"$ref": "#/$defs/identity"},
+    "recipient": {"$ref": "#/$defs/identity"},
+    "state_before": {"type": "string"},
+    "state_after": {"type": "string"},
+    "version": {"type": "integer", "minimum": 1},
+    "nonce": {"type": "string", "minLength": 16},
+    "artifact_refs": {"type": "array", "items": {"type": "object", "required": ["sha256"], "properties": {"uri": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "additionalProperties": false}},
+    "result": {"type": "object"},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {
+    "identity": {"type": "object", "required": ["persona_id", "surface_id", "machine_id", "project_id", "app_actor"], "properties": {"persona_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"}, "surface_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"}, "machine_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"}, "project_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"}, "app_actor": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"}}, "additionalProperties": false},
+    "signature": {"type": "object", "required": ["algorithm", "key_id", "value"], "properties": {"algorithm": {"const": "Ed25519"}, "key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{24}$"}, "value": {"type": "string", "minLength": 80}}, "additionalProperties": false}
+  },
+  "additionalProperties": false
+}

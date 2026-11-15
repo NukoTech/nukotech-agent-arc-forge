@@ -1,0 +1,22 @@
+schema: nuko.agent_arc.recipe.v1
+id: marketing-operator
+version: 1.0.1
+purpose: Produce bounded draft marketing content for human review
+authority_profile: draft-only
+components:
+  - id: community-draft-skill
+    version: 1.0.0
+    type: skill
+    sha256: 3cfd1c3e493e9cce987238431ceb316e284447ccacaf0ae311f366cea43eb9ac
+requested_capabilities:
+  - draft_content
+side_effects: []
+stop_conditions:
+  - operator_stop
+  - missing_verified_source
+  - authorization_boundary
+acceptance_tests:
+  - draft_artifact_created
+  - zero_external_actions
+receipt_policy: canonical-json
+

@@ -1,0 +1,25 @@
+filters:
+  and:
+    - 'file.ext == "md"'
+    - 'file.inFolder("_contradictions")'
+views:
+  - type: table
+    name: Contradictions
+    filters:
+      and:
+        - 'status == "UNRESOLVED"'
+    order:
+      - file.name
+      - note.fact_key
+      - note.reason_code
+      - note.detected_at
+      - note.proposal_id
+properties:
+  note.fact_key:
+    displayName: Fact key
+  note.reason_code:
+    displayName: Reason
+  note.detected_at:
+    displayName: Detected
+  note.proposal_id:
+    displayName: Proposal

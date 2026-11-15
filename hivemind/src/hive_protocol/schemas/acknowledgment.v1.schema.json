@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/acknowledgment.v1.schema.json",
+  "title": "Hive Consumer Acknowledgment v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "ack_id", "message_id", "consumed_at", "consumer", "outcome", "reason_code", "state", "signature"],
+  "properties": {
+    "schema_version": {"const": "hive.acknowledgment.v1"},
+    "ack_id": {"type": "string", "format": "uuid"},
+    "message_id": {"type": "string", "format": "uuid"},
+    "consumed_at": {"type": "string", "format": "date-time"},
+    "consumer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surface", "runtime", "machine", "project", "process_id", "process_namespace"],
+      "properties": {
+        "surface": {"type": "string", "minLength": 1},
+        "runtime": {"type": "string", "minLength": 1},
+        "machine": {"type": "string", "minLength": 1},
+        "project": {"type": "string", "minLength": 1},
+        "process_id": {"type": "integer", "minimum": 1},
+        "process_namespace": {"type": "string", "minLength": 1}
+      }
+    },
+    "outcome": {"enum": ["APPLIED", "REFUSED", "NOOP"]},
+    "reason_code": {"type": "string", "pattern": "^[A-Z0-9_]+$"},
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "before", "after", "before_sha256", "after_sha256", "changed", "version_before", "version_after"],
+      "properties": {
+        "key": {"type": "string", "minLength": 1},
+        "before": {},
+        "after": {},
+        "before_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "after_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "changed": {"type": "boolean"},
+        "version_before": {"type": "integer", "minimum": 0},
+        "version_after": {"type": "integer", "minimum": 0}
+      }
+    },
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "value"],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{24}$"},
+        "value": {"type": "string", "pattern": "^[A-Za-z0-9_-]{80,128}$"}
+      }
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": "hive.identity-context.v1",
+  "persona": {
+    "id": "UNASSIGNED",
+    "continuity_id": "UNASSIGNED",
+    "governance_role": "QUEEN"
+  },
+  "surface": {
+    "id": "Sample-Lab",
+    "channel": "Sample lab governance and orchestration surface",
+    "persona_continuity_id": "UNASSIGNED",
+    "experience_namespace": "surface/sample/lab"
+  },
+  "agent_worker": {
+    "id": "sample-builder",
+    "kind": "BUILDER",
+    "ephemeral": true,
+    "acts_for_persona": "UNASSIGNED"
+  },
+  "model_runtime": {
+    "model": "session-configured",
+    "runtime": "agent-runtime",
+    "provider": "configurable"
+  },
+  "machine_node": {
+    "machine": "hive-lab-host",
+    "node_id": "node:hive-lab-host",
+    "node_class": "LAB",
+    "environment": "STAGING"
+  },
+  "domain_product_project": {
+    "domain": "Sample",
+    "product": "HiveMind",
+    "project": "HIVE-LAB"
+  },
+  "governance_seat": {
+    "persona_seat": "PRIME",
+    "worker_seat": "UNASSIGNED",
+    "grant_ref": "Owner sample authorization"
+  },
+  "memory_vault_namespace": {
+    "vault": "HiveVault",
+    "tier": "NON_PRIVATE_RECEIPTS",
+    "namespace": "hive/lab/m003",
+    "raw_memory_in_github": false
+  },
+  "capability_authority": {
+    "authorization_ref": "urn:hive:authorization:sample-001",
+    "capabilities": [
+      "graph:link",
+      "mailbox:route",
+      "memory:retrieve",
+      "state:compare-and-set",
+      "vault:promote",
+      "vault:propose",
+      "vault:stage"
+    ],
+    "enforcement": "LOCAL_FAIL_CLOSED",
+    "expires_at": "2026-08-26T23:59:59Z"
+  }
+}

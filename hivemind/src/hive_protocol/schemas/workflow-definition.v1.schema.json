@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/workflow-definition.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "workflow_id", "version", "tenant_id", "project_id",
+    "title", "description", "parent_digest", "steps", "metadata", "publisher",
+    "created_at", "signature"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.workflow-definition.v1"},
+    "workflow_id": {"$ref": "#/$defs/safe_id"},
+    "version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+    "tenant_id": {"$ref": "#/$defs/safe_id"},
+    "project_id": {"$ref": "#/$defs/safe_id"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 256},
+    "description": {"type": "string", "maxLength": 4096},
+    "parent_digest": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/step"}
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tags"],
+      "properties": {
+        "tags": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {"$ref": "#/$defs/safe_id"}
+        }
+      }
+    },
+    "publisher": {"$ref": "#/$defs/identity"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {
+    "safe_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "content_type": {"type": "string", "pattern": "^[A-Za-z0-9.+_-]+/[A-Za-z0-9.+_-]+$"},
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor_id", "persona_id", "surface_id", "machine_id", "project_id",
+        "app_actor", "key_id"
+      ],
+      "properties": {
+        "actor_id": {"$ref": "#/$defs/safe_id"},
+        "persona_id": {"$ref": "#/$defs/safe_id"},
+        "surface_id": {"$ref": "#/$defs/safe_id"},
+        "machine_id": {"$ref": "#/$defs/safe_id"},
+        "project_id": {"$ref": "#/$defs/safe_id"},
+        "app_actor": {"$ref": "#/$defs/safe_id"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[a-f0-9]{24}$"}
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "source_step_id", "source_output", "required"],
+      "properties": {
+        "name": {"$ref": "#/$defs/safe_id"},
+        "type": {"$ref": "#/$defs/content_type"},
+        "source_step_id": {"$ref": "#/$defs/safe_id"},
+        "source_output": {"$ref": "#/$defs/safe_id"},
+        "required": {"type": "boolean"}
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "name": {"$ref": "#/$defs/safe_id"},
+        "type": {"$ref": "#/$defs/content_type"}
+      }
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id", "kind", "dependencies", "inputs", "outputs",
+        "required_capabilities", "required_trust", "target", "approval", "retry",
+        "resources", "ownership", "rollback"
+      ],
+      "properties": {
+        "step_id": {"$ref": "#/$defs/safe_id"},
+        "kind": {"enum": ["TASK", "APPROVAL", "COMPENSATION"]},
+        "dependencies": {
+          "type": "array", "uniqueItems": true, "maxItems": 256,
+          "items": {"$ref": "#/$defs/safe_id"}
+        },
+        "inputs": {
+          "type": "array", "maxItems": 128,
+          "items": {"$ref": "#/$defs/input"}
+        },
+        "outputs": {
+          "type": "array", "maxItems": 128,
+          "items": {"$ref": "#/$defs/output"}
+        },
+        "required_capabilities": {
+          "type": "array", "minItems": 1, "uniqueItems": true, "maxItems": 64,
+          "items": {"type": "string", "pattern": "^[a-z0-9._:-]{1,128}$"}
+        },
+        "required_trust": {"enum": ["OBSERVE", "PROPOSE", "ATTENDED", "BOUNDED"]},
+        "target": {
+          "type": "object", "additionalProperties": false,
+          "required": ["project_id", "machine_id", "surface_id"],
+          "properties": {
+            "project_id": {"$ref": "#/$defs/safe_id"},
+            "machine_id": {"anyOf": [{"$ref": "#/$defs/safe_id"}, {"type": "null"}]},
+            "surface_id": {"anyOf": [{"$ref": "#/$defs/safe_id"}, {"type": "null"}]}
+          }
+        },
+        "approval": {
+          "type": "object", "additionalProperties": false,
+          "required": ["required", "risk_class"],
+          "properties": {
+            "required": {"type": "boolean"},
+            "risk_class": {"enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]}
+          }
+        },
+        "retry": {
+          "type": "object", "additionalProperties": false,
+          "required": ["max_attempts", "timeout_seconds"],
+          "properties": {
+            "max_attempts": {"type": "integer", "minimum": 1, "maximum": 20},
+            "timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 86400}
+          }
+        },
+        "resources": {
+          "type": "object", "additionalProperties": false,
+          "required": ["max_tokens", "max_cost_microunits", "max_memory_mb"],
+          "properties": {
+            "max_tokens": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+            "max_cost_microunits": {"type": "integer", "minimum": 0, "maximum": 1000000000000},
+            "max_memory_mb": {"type": "integer", "minimum": 1, "maximum": 1048576}
+          }
+        },
+        "ownership": {
+          "type": "object", "additionalProperties": false,
+          "required": ["branches", "files"],
+          "properties": {
+            "branches": {
+              "type": "array", "uniqueItems": true, "maxItems": 128,
+              "items": {"type": "string", "pattern": "^[A-Za-z0-9._/-]{1,256}$"}
+            },
+            "files": {
+              "type": "array", "uniqueItems": true, "maxItems": 1024,
+              "items": {"type": "string", "pattern": "^[A-Za-z0-9._/-]{1,512}$"}
+            }
+          }
+        },
+        "rollback": {
+          "type": "object", "additionalProperties": false,
+          "required": ["mode", "compensation_step_id"],
+          "properties": {
+            "mode": {"enum": ["NONE", "GIT_CHECKPOINT", "COMPENSATION"]},
+            "compensation_step_id": {"anyOf": [{"$ref": "#/$defs/safe_id"}, {"type": "null"}]}
+          }
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "value"],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[a-f0-9]{24}$"},
+        "value": {"type": "string", "minLength": 32}
+      }
+    }
+  }
+}

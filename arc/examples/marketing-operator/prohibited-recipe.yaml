@@ -1,0 +1,21 @@
+schema: nukotech.agent_arc.recipe.v1
+id: marketing-operator
+version: 1.0.0
+purpose: Demonstrate refusal of an unauthorized public-publishing request
+authority_profile: draft-only
+components:
+  - id: community-draft-skill
+    version: 1.0.0
+    type: skill
+    sha256: ab45866c52119b439f76fadb94ec8842fd0ef18ff142025fa19aa853b0fc398d
+requested_capabilities:
+  - draft_content
+  - public_publish
+side_effects: []
+stop_conditions:
+  - operator_stop
+  - missing_verified_source
+  - authorization_boundary
+acceptance_tests:
+  - refused_without_package
+receipt_policy: canonical-json

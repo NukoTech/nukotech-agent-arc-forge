@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/agent-arc/authorization-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "id",
+    "subject",
+    "allowed_capabilities",
+    "allowed_side_effects",
+    "prohibited_effects"
+  ],
+  "properties": {
+    "schema": {"const": "nukotech.agent_arc.authorization.v1"},
+    "id": {"type": "string", "minLength": 1},
+    "subject": {"type": "string", "minLength": 1},
+    "allowed_capabilities": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "allowed_side_effects": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "prohibited_effects": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+  }
+}

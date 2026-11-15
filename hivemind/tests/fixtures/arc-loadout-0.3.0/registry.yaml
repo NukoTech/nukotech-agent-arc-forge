@@ -1,0 +1,28 @@
+schema: nuko.agent_arc.registry.v1
+registry_version: 0.3.0-alpha.1
+product:
+  id: nuko-agent-arc
+  status: LOCAL_COMPOSER_ALPHA
+components:
+  - schema: nuko.agent_arc.component.v1
+    id: community-draft-skill
+    version: 1.0.0
+    type: skill
+    sha256: 3cfd1c3e493e9cce987238431ceb316e284447ccacaf0ae311f366cea43eb9ac
+    path: components/draft-skill.txt
+    license: MIT
+    provenance:
+      source: first-party
+      owner: NUKO
+    dependencies: []
+    conflicts: []
+    capabilities:
+      - draft_content
+    side_effects: []
+    stop_conditions:
+      - operator_stop
+      - missing_verified_source
+      - authorization_boundary
+    rollback:
+      - remove_candidate_package
+

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/operator-response.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "outcome",
+    "reason_code",
+    "object_version",
+    "changed",
+    "data",
+    "technical_evidence"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.operator-response.v1"},
+    "request_id": {"type": "string", "format": "uuid"},
+    "outcome": {"enum": ["OK", "APPLIED", "DEGRADED", "REFUSED"]},
+    "reason_code": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{1,127}$"
+        }
+      ]
+    },
+    "object_version": {"$ref": "#/$defs/object_version"},
+    "changed": {"type": "boolean"},
+    "data": {
+      "type": "object",
+      "maxProperties": 128
+    },
+    "technical_evidence": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "ref", "sha256"],
+        "properties": {
+          "kind": {"$ref": "#/$defs/safe_id"},
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+    },
+    "object_version": {
+      "oneOf": [
+        {"const": "ABSENT"},
+        {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      ]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+# OS and sync metadata — auto-generated noise, never tracked.
+desktop.ini
+desktop *.ini
+desktop (*).ini
+.DS_Store
+Thumbs.db
+
+# Editor / IDE local artifacts
+*.swp
+*.swo
+
+# Python cache (any local scripts under registry)
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+build/
+dist/
+
+# OS sync temp files
+*.tmp.drivedownload

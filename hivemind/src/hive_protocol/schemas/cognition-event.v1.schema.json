@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/cognition-event.v1.schema.json",
+  "title": "Hive cognition event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "event_id", "tenant_id", "project_id", "event_type", "privacy_class", "experience_scope", "title", "text", "structured_claims", "evidence", "source_ref", "source_sha256", "occurred_at", "recorded_at"],
+  "properties": {
+    "schema_version": {"const": "hive.cognition-event.v1"},
+    "event_id": {"type": "string", "format": "uuid"},
+    "tenant_id": {"$ref": "#/$defs/id"},
+    "project_id": {"$ref": "#/$defs/id"},
+    "event_type": {"enum": ["CAPTURE_ADMITTED", "RESEARCH_ARTIFACT", "TASK_EVENT", "PROJECT_EVENT"]},
+    "privacy_class": {"enum": ["PERSONA_PRIVATE", "SURFACE_PRIVATE", "PROJECT_PRIVATE", "SHARED_REVIEWED"]},
+    "experience_scope": {"$ref": "#/$defs/scope"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 512},
+    "text": {"type": "string", "maxLength": 262144},
+    "structured_claims": {"type": "array", "maxItems": 128, "uniqueItems": true, "items": {"$ref": "#/$defs/structured_claim"}},
+    "evidence": {"type": "array", "maxItems": 256, "uniqueItems": true, "items": {"$ref": "#/$defs/evidence"}},
+    "source_ref": {"type": "string", "minLength": 1, "maxLength": 1024},
+    "source_sha256": {"$ref": "#/$defs/sha256"},
+    "occurred_at": {"type": "string", "format": "date-time"},
+    "recorded_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "node_id": {"type": ["string", "null"], "pattern": "^node:[0-9a-f]{64}$"},
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "owner_id"],
+      "properties": {
+        "kind": {"enum": ["PERSONA", "SURFACE", "DOMAIN", "SHARED"]},
+        "owner_id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "anchor_id", "source_sha256", "normalized_sha256"],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/id"},
+        "anchor_id": {"$ref": "#/$defs/id"},
+        "source_sha256": {"$ref": "#/$defs/sha256"},
+        "normalized_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "structured_claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_type", "subject_id", "key", "value", "narrative", "proposed_action", "supersedes", "revokes"],
+      "properties": {
+        "candidate_type": {"enum": ["PERSON", "ORGANIZATION", "PROJECT", "TOPIC", "ASSET", "DECISION", "COMMITMENT", "BLOCKER", "OUTCOME", "CORRECTION", "RELATIONSHIP", "EXPERIENCE", "CONTRADICTION", "STALE_KNOWLEDGE", "MISSING_CONTEXT"]},
+        "subject_id": {"$ref": "#/$defs/id"},
+        "key": {"$ref": "#/$defs/id"},
+        "value": {},
+        "narrative": {"type": "string", "minLength": 1, "maxLength": 8192},
+        "proposed_action": {"enum": ["CREATE", "CORRECT", "REVOKE"]},
+        "supersedes": {"$ref": "#/$defs/node_id"},
+        "revokes": {"$ref": "#/$defs/node_id"}
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "nukotech.hive.release-attestation-policy.v1",
+  "artifact": {
+    "digest_algorithm": "sha256",
+    "name": "nukotech-hive-local-alpha-v0.1.0-linux-x86_64.tar.gz",
+    "unsigned_action": "reject"
+  },
+  "identity": {
+    "certificate_identity": "https://github.com/<REPO_SLUG>/.github/workflows/<RELEASE_WORKFLOW_PATH>@<PR_MERGE_REF>",
+    "oidc_issuer": "https://token.actions.githubusercontent.com",
+    "repository": "<REPO_SLUG>",
+    "source_ref": "<PR_MERGE_REF>",
+    "workflow_name": "Hive Alpha provenance candidate",
+    "workflow_trigger": "pull_request"
+  },
+  "runner": {
+    "deny_self_hosted": true
+  },
+  "source": {
+    "digest_algorithm": "sha1",
+    "digest_required_from_caller": true
+  },
+  "transparency": {
+    "public_sigstore_bundle_required": true,
+    "repository_identity_and_digest_metadata_are_public": true
+  },
+  "verification": {
+    "minimum_cosign_version": "3.1.2",
+    "replay_ledger_required": true,
+    "reject_duplicate_bundle_fingerprint": true,
+    "reject_duplicate_claim_id": true
+  }
+}

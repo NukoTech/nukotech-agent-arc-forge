@@ -1,0 +1,40 @@
+filters:
+  and:
+    - 'file.ext == "md"'
+    - 'file.inFolder("_pruning")'
+views:
+  - type: table
+    name: Prune stage one
+    filters:
+      and:
+        - 'prune_stage == "FLAGGED"'
+    order:
+      - file.name
+      - note.reason
+      - note.flagged_at
+      - note.reviewer
+  - type: table
+    name: Prune stage two quarantine
+    filters:
+      and:
+        - 'prune_stage == "QUARANTINED"'
+        - 'delete_eligible_at <= today()'
+        - 'deletion_receipt == null'
+    order:
+      - file.name
+      - note.approved_at
+      - note.delete_eligible_at
+      - note.archive_ref
+properties:
+  note.reason:
+    displayName: Reason
+  note.flagged_at:
+    displayName: Flagged
+  note.reviewer:
+    displayName: Reviewer
+  note.approved_at:
+    displayName: Approved
+  note.delete_eligible_at:
+    displayName: Delete eligible
+  note.archive_ref:
+    displayName: Archive

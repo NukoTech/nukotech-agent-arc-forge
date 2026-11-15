@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/adapter-result.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "result_id", "request_digest", "plan_digest", "adapter_id",
+    "adapter_version", "project_id", "outcome", "evidence_refs", "side_effects",
+    "resource_use", "rollback_ref", "detail"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.adapter-result.v1"},
+    "result_id": {"$ref": "#/$defs/safe_id"},
+    "request_digest": {"$ref": "#/$defs/sha256"},
+    "plan_digest": {"$ref": "#/$defs/sha256"},
+    "adapter_id": {"$ref": "#/$defs/safe_id"},
+    "adapter_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"},
+    "project_id": {"$ref": "#/$defs/safe_id"},
+    "outcome": {"enum": ["APPLIED", "NO_OP", "REFUSED", "DEGRADED", "FAILED"]},
+    "evidence_refs": {"type": "array", "items": {"type": "object"}},
+    "side_effects": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 512}},
+    "resource_use": {"type": "object"},
+    "rollback_ref": {"type": ["string", "null"], "maxLength": 512},
+    "detail": {"type": "object"},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {
+    "safe_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "signature": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "key_id", "value"],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{24}$"},
+        "value": {"type": "string", "minLength": 80}
+      }
+    }
+  }
+}

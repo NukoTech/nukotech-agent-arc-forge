@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schema/hive/cycle2-task.v1.json",
+  "type": "object",
+  "required": ["schema_version", "task_id", "state", "version", "created_at", "updated_at", "expires_at", "creator", "assignee", "operation", "capability", "payload", "source_refs", "nonce", "signature"],
+  "properties": {
+    "schema_version": {"const": "hive.cycle2.task.v1"},
+    "task_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "state": {"enum": ["CREATED", "ASSIGNED", "ACCEPTED", "ACKNOWLEDGED", "PROGRESS", "COMPLETED", "REJECTED", "CANCELLED"]},
+    "version": {"type": "integer", "minimum": 1},
+    "created_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "creator": {"$ref": "#/$defs/identity"},
+    "assignee": {"$ref": "#/$defs/identity"},
+    "operation": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "capability": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "payload": {"type": "object"},
+    "source_refs": {"type": "array", "items": {"type": "object", "required": ["uri", "sha256"], "properties": {"uri": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "additionalProperties": false}},
+    "nonce": {"type": "string", "minLength": 16},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {
+    "identity": {"type": "object", "required": ["persona_id", "surface_id", "machine_id", "project_id", "app_actor"], "properties": {"persona_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"}, "surface_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"}, "machine_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"}, "project_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"}, "app_actor": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"}}, "additionalProperties": false},
+    "signature": {"type": "object", "required": ["algorithm", "key_id", "value"], "properties": {"algorithm": {"const": "Ed25519"}, "key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{24}$"}, "value": {"type": "string", "minLength": 80}}, "additionalProperties": false}
+  },
+  "additionalProperties": false
+}

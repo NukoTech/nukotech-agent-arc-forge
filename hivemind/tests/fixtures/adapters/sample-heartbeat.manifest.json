@@ -1,0 +1,77 @@
+{
+  "schema_version": "hive.application-adapter-manifest.v1",
+  "adapter_id": "nukotech.hive.sample-heartbeat",
+  "name": "Sample Linux Heartbeat (test fixture)",
+  "version": "0.1.0",
+  "maintainer": "NukoTech HiveMind",
+  "capability_ids": [
+    "health.snapshot",
+    "receipt.ed25519",
+    "task.local.harmless-marker"
+  ],
+  "execution_mode": "NATIVE",
+  "platforms": [
+    {
+      "os": "linux",
+      "architecture": "aarch64",
+      "runtime": "python>=3.11"
+    }
+  ],
+  "required_permissions": [
+    "filesystem.read.repository",
+    "filesystem.write.adapter-state"
+  ],
+  "accepted_data_classifications": [
+    "PROJECT_PRIVATE",
+    "SURFACE_PRIVATE"
+  ],
+  "request_schema": "hive.sample.task.v1",
+  "result_schema": "hive.sample.receipt.v1",
+  "events": [
+    "heartbeat.completed",
+    "task.blocked-narrowly",
+    "task.completed",
+    "task.refused"
+  ],
+  "network_destinations": [],
+  "credential_references": [
+    "manual:attended-ed25519-key-mode-0600"
+  ],
+  "dependencies": [],
+  "health_check": {
+    "entrypoint": "manual:sample-health-check",
+    "timeout_seconds": 10
+  },
+  "export": {
+    "entrypoint": "manual:export-receipts-only",
+    "timeout_seconds": 300
+  },
+  "revocation_check": {
+    "entrypoint": "manual:read-local-revocation-state",
+    "timeout_seconds": 10
+  },
+  "rollback": {
+    "entrypoint": "manual:preserve-receipts-and-remove-only-adapter-state",
+    "timeout_seconds": 300
+  },
+  "uninstall": {
+    "entrypoint": "manual:no-service-installed-during-attended-pilot",
+    "timeout_seconds": 300
+  },
+  "resource_limits": {
+    "max_input_bytes": 10485760,
+    "max_output_bytes": 10485760,
+    "timeout_seconds": 300
+  },
+  "retention": {
+    "policy": "Preserve signed receipts until explicitly authorized archival.",
+    "delete_method": "No deletion during the attended pilot."
+  },
+  "offline_behavior": "SUPPORTED",
+  "signer_policy": {
+    "issuer": "NukoTech HiveMind attended alpha",
+    "allowed_key_ids": [
+      "deployment-pinned-ed25519-key-id"
+    ]
+  }
+}

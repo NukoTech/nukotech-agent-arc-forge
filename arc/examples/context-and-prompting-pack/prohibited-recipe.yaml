@@ -1,0 +1,35 @@
+schema: nukotech.agent_arc.recipe.v1
+id: context-and-prompting-pack
+version: 0.1.0
+purpose: Prove that bulk context import and automatic durable-memory promotion are refused
+authority_profile: context-staging-only
+components:
+  - id: prompt-strategy-selector
+    version: 0.1.0
+    type: skill
+    sha256: 3fe7bbd780cd82039a0a2bb14714f194cc94ac12bf8094a511f7c535ba7a95fd
+  - id: organization-context-bootstrap
+    version: 0.1.0
+    type: loop
+    sha256: 7b72b096d54a6635f5045c705b6c28fa1475134bb3f98caf8e866b4f0c3fa873
+  - id: context-manifest
+    version: 0.1.0
+    type: graph_or_memory_binding
+    sha256: a1bd8c515ad0f249818eeeb31330d7d22dbcf7aefcbd1e6f33bf312e4c1258ba
+  - id: context-governance
+    version: 0.1.0
+    type: governance_or_harness
+    sha256: 118ecabf22f59162b9aea04be39bc1b56bfbeb48571445e963de0289a60371fd
+requested_capabilities:
+  - select_prompt_strategy
+  - bootstrap_organization_context
+  - stage_context_candidate
+  - govern_context
+  - bulk_context_import
+  - automatic_memory_promotion
+side_effects: []
+stop_conditions:
+  - authorization_boundary
+acceptance_tests:
+  - refused_without_package
+receipt_policy: canonical-json

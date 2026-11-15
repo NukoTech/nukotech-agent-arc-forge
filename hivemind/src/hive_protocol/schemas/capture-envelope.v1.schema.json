@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/capture-envelope.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "capture_id", "tenant_id", "project_id",
+    "privacy_class", "channel", "source_owner", "acquired_at",
+    "rights_assertion", "original_sha256", "original_size_bytes",
+    "media_type", "parser", "transformations", "risk_flags",
+    "admission_state", "destination", "source_record_id", "receipt_ref"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.capture-envelope.v1"},
+    "capture_id": {"$ref": "#/$defs/safe_id"},
+    "tenant_id": {"$ref": "#/$defs/safe_id"},
+    "project_id": {"$ref": "#/$defs/safe_id"},
+    "privacy_class": {"enum": ["PROJECT_PRIVATE", "CUSTOMER_PRIVATE", "PERSONA_PRIVATE", "NON_PRIVATE"]},
+    "channel": {"enum": ["TEXT", "MARKDOWN", "CLIPBOARD", "FILE", "FOLDER_HANDOFF", "BROWSER_HANDOFF", "WEBPAGE_SNAPSHOT", "PDF", "IMAGE", "AUDIO", "VIDEO", "MEETING_RECORDING", "TRANSCRIPT"]},
+    "source_owner": {"type": "string", "minLength": 1, "maxLength": 256},
+    "acquired_at": {"type": "string", "format": "date-time"},
+    "rights_assertion": {"enum": ["USER_PROVIDED", "AUTHORIZED_PROJECT_SOURCE", "PUBLIC_OR_LICENSED", "UNKNOWN_REVIEW_REQUIRED"]},
+    "original_sha256": {"$ref": "#/$defs/sha256"},
+    "original_size_bytes": {"type": "integer", "minimum": 0, "maximum": 1073741824},
+    "media_type": {"type": "string", "pattern": "^[A-Za-z0-9.+-]+/[A-Za-z0-9.+-]+$", "maxLength": 128},
+    "parser": {"$ref": "#/$defs/parser"},
+    "transformations": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {"$ref": "#/$defs/transformation"}
+    },
+    "risk_flags": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 32,
+      "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,63}$"}
+    },
+    "admission_state": {"enum": ["ADMITTED_STAGING", "ADMITTED_RESEARCH", "QUEUED_PROVIDER", "REFUSED", "FAILED"]},
+    "destination": {"enum": ["STAGING", "RESEARCH", "OFFLINE_QUEUE", "NONE"]},
+    "source_record_id": {"oneOf": [{"$ref": "#/$defs/safe_id"}, {"type": "null"}]},
+    "receipt_ref": {"oneOf": [{"$ref": "#/$defs/safe_id"}, {"type": "null"}]}
+  },
+  "$defs": {
+    "safe_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "parser": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parser_id", "version"],
+      "properties": {
+        "parser_id": {"$ref": "#/$defs/safe_id"},
+        "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"}
+      }
+    },
+    "transformation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "input_sha256", "output_sha256"],
+      "properties": {
+        "kind": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,63}$"},
+        "input_sha256": {"$ref": "#/$defs/sha256"},
+        "output_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

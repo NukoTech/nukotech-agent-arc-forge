@@ -1,0 +1,6 @@
+{
+  "exact_query": "The launch color is amber.",
+  "expected_source_id": "alpha-note-001",
+  "expected_answer_status_without_model": "RETRIEVAL_ONLY",
+  "expected_external_action": false
+}

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/workflow-approval.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "approval_id", "approval_kind", "run_id",
+    "workflow_sha256", "step_id", "attempt", "tenant_id", "project_id",
+    "preview_sha256", "input_sha256", "decision", "risk_class", "approver",
+    "authorization_ref", "decided_at", "expires_at", "signature"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.workflow-approval.v1"},
+    "approval_id": {"type": "string", "format": "uuid"},
+    "approval_kind": {"enum": ["STEP_APPROVAL", "CONFLICT_EXCEPTION", "STALE_RELEASE", "ROLLBACK", "COMPENSATION"]},
+    "run_id": {"type": "string", "format": "uuid"},
+    "workflow_sha256": {"$ref": "#/$defs/sha256"},
+    "step_id": {"anyOf": [{"$ref": "#/$defs/safe_id"}, {"type": "null"}]},
+    "attempt": {"anyOf": [{"type": "integer", "minimum": 1, "maximum": 1000}, {"type": "null"}]},
+    "tenant_id": {"$ref": "#/$defs/safe_id"},
+    "project_id": {"$ref": "#/$defs/safe_id"},
+    "preview_sha256": {"$ref": "#/$defs/sha256"},
+    "input_sha256": {"$ref": "#/$defs/sha256"},
+    "decision": {"enum": ["APPROVED", "REJECTED"]},
+    "risk_class": {"enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]},
+    "approver": {"$ref": "#/$defs/identity"},
+    "authorization_ref": {"type": "string", "minLength": 1, "maxLength": 256},
+    "decided_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {
+    "safe_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["actor_id", "persona_id", "surface_id", "machine_id", "project_id", "app_actor", "key_id"],
+      "properties": {
+        "actor_id": {"$ref": "#/$defs/safe_id"},
+        "persona_id": {"$ref": "#/$defs/safe_id"},
+        "surface_id": {"$ref": "#/$defs/safe_id"},
+        "machine_id": {"$ref": "#/$defs/safe_id"},
+        "project_id": {"$ref": "#/$defs/safe_id"},
+        "app_actor": {"$ref": "#/$defs/safe_id"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[a-f0-9]{24}$"}
+      }
+    },
+    "signature": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "key_id", "value"],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[a-f0-9]{24}$"},
+        "value": {"type": "string", "minLength": 32}
+      }
+    }
+  }
+}

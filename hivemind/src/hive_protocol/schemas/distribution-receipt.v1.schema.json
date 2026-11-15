@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/distribution-receipt.v1.schema.json",
+  "title": "Hive governance distribution receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "receipt_id", "node_id", "version", "release_sha256", "pin_sha256", "outcome", "activation", "recorded_at", "process_id", "process_namespace", "signature"],
+  "properties": {
+    "schema_version": {"const": "hive.distribution-receipt.v1"},
+    "receipt_id": {"type": "string", "format": "uuid"},
+    "node_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$"},
+    "version": {"type": "string"},
+    "release_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "pin_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "outcome": {"enum": ["STAGED_NOT_ACTIVATED", "ROLLED_BACK"]},
+    "activation": {"const": false},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "process_id": {"type": "integer", "minimum": 1},
+    "process_namespace": {"type": "string", "pattern": "^HIVE-LAB-"},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {"signature": {"type": "object", "additionalProperties": false, "required": ["algorithm", "key_id", "value"], "properties": {"algorithm": {"const": "Ed25519"}, "key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{24}$"}, "value": {"type": "string", "pattern": "^[A-Za-z0-9_-]{80,128}$"}}}}
+}

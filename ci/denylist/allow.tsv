@@ -1,0 +1,23 @@
+# Line-hash exceptions for the denylist scanner.
+# Columns: path<TAB>rule<TAB>line_sha256<TAB>reason
+#
+# path is exact and repo-relative: no globs (* ? [), no leading slash, no ..
+# line_sha256 is the SHA-256 hex digest (lowercase) of the UTF-8 line text
+# with the line ending already stripped — the same string Python's
+# str.splitlines() yields. Trailing spaces and other whitespace are included.
+# An entry suppresses only that named rule, on the line whose hash matches,
+# in that exact file.
+# Only content-classed rules may be excepted. Path, host, and userpath
+# rules cannot, and a rule with no CLASS cannot.
+# Stale entries, malformed rows, hash mismatches, and wrong-rule rows
+# fail the scan.
+# This file is itself scanned; do not put a denied token in the reason.
+# Generate an entry with:
+#   python ci/scripts/denylist_scan.py --hash-line path:line
+#
+path	rule	line_sha256	reason
+capabilities/loop-gate/skills/nukotech-loop-gate/SKILL.md	LABOR_COST_WORD	785af7b616fcb09bbb43f9db5207df0c16b13725482e8569ec21d007eaa032cb	loop-gate money-words guard list
+capabilities/loop-gate/loop_gate/packets.py	LABOR_COST_WORD	39cca5f90be74002b888e40cbe2449f6ccb72cb50c122b8f253f2241ca8903e7	loop-gate money-words guard list
+hivemind/scripts/credential_pattern_scan.py	KEYPAT	e9963677b6d2b09c9e66208293d2d0a5c55316022431e234ce3d352e8297c243	scanner detection list entry; pattern prefix only, no credential
+hivemind/scripts/credential_pattern_scan.py	SUPABASE	cfd03c13e7c8c6fb72558fb7055ea1cda80bf93fb79fdaf79bcf5480eb2d59c8	detector pattern, not a credential
+hivemind/src/hive_protocol/product/workspace.py	EMAIL	d714d1d82ac0cddebfb3f30c5ca2ac8755f76847681d69eb6f8c734818ef06bd	RFC 2606 reserved example.invalid address used as local git identity

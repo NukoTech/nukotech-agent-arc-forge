@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/work-envelope.v1.schema.json",
+  "title": "Hive Work Envelope v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "message_id",
+    "issued_at",
+    "expires_at",
+    "nonce",
+    "identity",
+    "recipient",
+    "authority",
+    "task",
+    "provenance",
+    "signature"
+  ],
+  "properties": {
+    "schema_version": {"const": "hive.work-envelope.v1"},
+    "message_id": {"type": "string", "format": "uuid"},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "nonce": {"type": "string", "pattern": "^[A-Za-z0-9_-]{32,128}$"},
+    "identity": {"$ref": "#/$defs/identity"},
+    "recipient": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surface", "machine", "project"],
+      "properties": {
+        "surface": {"type": "string", "minLength": 1},
+        "machine": {"type": "string", "minLength": 1},
+        "project": {"type": "string", "minLength": 1}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["environment", "authorization_ref", "capabilities"],
+      "properties": {
+        "environment": {"enum": ["LAB", "STAGING", "PRODUCTION"]},
+        "authorization_ref": {"type": "string", "minLength": 1},
+        "capabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {"type": "string", "pattern": "^[a-z0-9_.:-]+$"}
+        }
+      }
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "operation", "key", "expected", "value"],
+      "properties": {
+        "kind": {"const": "state-transition"},
+        "operation": {"const": "compare-and-set"},
+        "key": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
+        "expected": {"type": ["string", "number", "boolean", "null"]},
+        "value": {"type": ["string", "number", "boolean", "null"]}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "branch", "commit", "issue", "source_records"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "branch": {"type": "string", "minLength": 1},
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "issue": {"type": "string", "format": "uri"},
+        "source_records": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ref", "sha256", "status"],
+            "properties": {
+              "ref": {"type": "string", "minLength": 1},
+              "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+              "status": {"enum": ["VERIFIED", "CONFLICT", "UNKNOWN"]}
+            }
+          }
+        }
+      }
+    },
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["user", "declaration", "persona", "surface", "runtime", "machine", "project", "seat"],
+      "properties": {
+        "user": {"type": "string", "minLength": 1},
+        "declaration": {"const": "declared_by_user"},
+        "persona": {"type": "string", "minLength": 1},
+        "surface": {"type": "string", "minLength": 1},
+        "runtime": {"type": "string", "minLength": 1},
+        "machine": {"type": "string", "minLength": 1},
+        "project": {"type": "string", "minLength": 1},
+        "seat": {"type": "string", "minLength": 1}
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "value"],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{24}$"},
+        "value": {"type": "string", "pattern": "^[A-Za-z0-9_-]{80,128}$"}
+      }
+    }
+  }
+}

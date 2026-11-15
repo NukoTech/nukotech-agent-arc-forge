@@ -1,0 +1,4 @@
+NukoTech Agent Arc Community example component.
+Capability: draft_content
+Side effects: none
+

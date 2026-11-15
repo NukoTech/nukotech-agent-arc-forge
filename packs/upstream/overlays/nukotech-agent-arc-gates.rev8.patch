@@ -1,0 +1,308 @@
+diff --git a/README.md b/README.md
+index 86b4abe..4ecdcc0 100644
+--- a/README.md
++++ b/README.md
+@@ -1,18 +1,29 @@
+ # NukoTech Agent Arc Gates
+ 
+-> Part of the NukoTech open skill set ([github.com/NukoTech](https://github.com/NukoTech)). MIT licensed. (c) 2026 Nuko Technologies LLC.
++> Part of the NukoTech open skill set. MIT licensed. (c) 2026 Nuko Technologies LLC.
+ 
+ ## What it is
+ 
+ A set of generic, versioned agent quality gates: nukotech-artifact-delivery-gate, nukotech-capability-reuse-preflight, nukotech-claim-evidence-review, nukotech-coi-evidence-review, nukotech-diagnosis-remediation-gate, nukotech-end-to-end-trace-gate, nukotech-handoff-capsule, nukotech-knowledge-ingest-gate, nukotech-resource-state-gate, nukotech-scale-readiness-gate, nukotech-scope-change-gate, nukotech-synthetic-data-governance, nukotech-threat-evidence-triage, nukotech-verification-integrity-gate.
+ 
++## Configure
++
++This skill is written so you can point it at your own organization and systems. Before use, replace these placeholders wherever they appear:
++
++- `{{YOUR_ORG}}` — your company, team, or operator
++- `{{TARGET_COMPANY}}` — the company or product being assessed, if it is not your own
++- `{{TARGET_SYSTEM}}` — the system, repository, binary, or workflow under review
++- `{{RECON_WORKFLOW}}` — your breadth-first recon or landscape-triage workflow, if you use one
++
++Leave `NukoTech` in the copyright line, license, GitHub path, and pack or folder name; that is authorship only.
++
+ ## Install
+ 
+ 
+ ```bash
+ git clone https://github.com/NukoTech/nukotech-agent-arc-gates.git
+ ```
+ 
+ 
+ Copy the skill folder into your agent's skills directory (for example `~/.claude/skills/` for Claude Code, or your platform's equivalent). Each `SKILL.md` has YAML front matter (`name`, `description`) that agent runtimes use to decide when to load it.
+ 
+@@ -119,10 +137,6 @@ Ask your agent for the task described above; the runtime loads the skill when th
+ 
+ Five gates (capability-reuse-preflight, claim-evidence-review, coi-evidence-review, end-to-end-trace-gate, verification-integrity-gate) are original re-expressions; no upstream text, examples or scoring language is redistributed. Research credits: verification-integrity-gate, end-to-end-trace-gate and capability-reuse-preflight draw on ideas from Foss, D.T. (2026), "Cooperative Sabotage: How Frontier AI Covertly Undermines Its Own Replacement", DOI 10.13140/RG.2.2.29674.07362. claim-evidence-review and coi-evidence-review draw on "AutoVerifier: An Agentic Automated Verification Framework Using Large Language Models", arXiv:2604.02617 (2026). knowledge-ingest-gate: Inspired by Andrej Karpathy's LLM knowledge-base ("second brain") approach, as credited in its source skill llm-knowledge-base-builder ("Complete Karpathy second brain system").
+ 
+-## Contributing
+-
+-See `CONTRIBUTING.md`. Fork and open a pull request; maintainer review is required.
+-
+ ## License
+ 
+ MIT. Copyright (c) 2026 Nuko Technologies LLC. See `LICENSE`.
+diff --git a/nukotech-artifact-delivery-gate/SKILL.md b/nukotech-artifact-delivery-gate/SKILL.md
+index bd25989..30f3fd1 100644
+--- a/nukotech-artifact-delivery-gate/SKILL.md
++++ b/nukotech-artifact-delivery-gate/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: nukotech-artifact-delivery-gate
+-description: Use when NukoTech needs to prove the state of an internal artifact after creation, upload, filing, commit, handoff, or directive placement. Distinguishes generated, persisted, reachable, and explicitly acknowledged states without treating a Drive/Mirror copy as consumer receipt or authorizing external release, overwrite, deletion, or recipient contact.
++description: Use when {{YOUR_ORG}} needs to prove the state of an internal artifact after creation, upload, filing, commit, handoff, or directive placement. Distinguishes generated, persisted, reachable, and explicitly acknowledged states without treating a Drive/Mirror copy as consumer receipt or authorizing external release, overwrite, deletion, or recipient contact.
+ ---
+ 
+ # NukoTech Artifact Delivery Gate
+diff --git a/nukotech-capability-reuse-preflight/scripts/validate_preflight.py b/nukotech-capability-reuse-preflight/scripts/validate_preflight.py
+index bd2c781..9aeb452 100644
+--- a/nukotech-capability-reuse-preflight/scripts/validate_preflight.py
++++ b/nukotech-capability-reuse-preflight/scripts/validate_preflight.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Validate a NukoTech capability-reuse preflight packet."""
++"""Validate a capability-reuse preflight packet."""
+ 
+ import argparse
+ import json
+diff --git a/nukotech-capability-reuse-preflight/tests/test_validate_preflight.py b/nukotech-capability-reuse-preflight/tests/test_validate_preflight.py
+index 4073662..8907c5f 100644
+--- a/nukotech-capability-reuse-preflight/tests/test_validate_preflight.py
++++ b/nukotech-capability-reuse-preflight/tests/test_validate_preflight.py
+@@ -236,7 +236,7 @@ class CapabilityReusePreflightTests(unittest.TestCase):
+ 
+     def test_material_flag_with_authorization_can_pass(self):
+         p = valid_packet(); p["decision"]["material_flags"] = ["NEW_SPEND"]
+-        p["decision"]["authorization_evidence"] = "Approved procurement ticket NUKOTECH-42"
++        p["decision"]["authorization_evidence"] = "Approved procurement ticket ORG-42"
+         self.assert_disposition(p, "PREFLIGHT_PASS")
+ 
+     def test_unclear_license_cannot_be_overridden(self):
+diff --git a/nukotech-claim-evidence-review/SKILL.md b/nukotech-claim-evidence-review/SKILL.md
+index a0ecdb2..9981158 100644
+--- a/nukotech-claim-evidence-review/SKILL.md
++++ b/nukotech-claim-evidence-review/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: nukotech-claim-evidence-review
+-description: Use when NukoTech must verify, refute, or preserve uncertainty around a specific vendor, technical, performance, certification, research, or due-diligence claim using captured evidence. Applies when source independence, citation fidelity, OCR quality, conflicting evidence, units, conditions, or client-release readiness matter; not for authorizing legal, financial, trading, engineering, live-bid, outreach, or publication decisions.
++description: Use when {{YOUR_ORG}} must verify, refute, or preserve uncertainty around a specific vendor, technical, performance, certification, research, or due-diligence claim using captured evidence. Applies when source independence, citation fidelity, OCR quality, conflicting evidence, units, conditions, or client-release readiness matter; not for authorizing legal, financial, trading, engineering, live-bid, outreach, or publication decisions.
+ ---
+ 
+ # NukoTech Claim Evidence Review
+diff --git a/nukotech-claim-evidence-review/scripts/validate_claim_packet.py b/nukotech-claim-evidence-review/scripts/validate_claim_packet.py
+index 372c2ee..4ef69ea 100644
+--- a/nukotech-claim-evidence-review/scripts/validate_claim_packet.py
++++ b/nukotech-claim-evidence-review/scripts/validate_claim_packet.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Validate a source-bound NukoTech claim-evidence review packet."""
++"""Validate a source-bound claim-evidence review packet."""
+ 
+ from __future__ import annotations
+ 
+diff --git a/nukotech-coi-evidence-review/SKILL.md b/nukotech-coi-evidence-review/SKILL.md
+index d784bb9..262b9d1 100644
+--- a/nukotech-coi-evidence-review/SKILL.md
++++ b/nukotech-coi-evidence-review/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: nukotech-coi-evidence-review
+-description: Use when researching possible conflicts of interest, commercial incentives, funding relationships, ownership ties, or disclosure gaps for NukoTech due diligence. Builds source-bound relationship findings without treating affiliation as proof of bias, misconduct, or falsity; not for issuing legal conclusions or contacting subjects.
++description: Use when researching possible conflicts of interest, commercial incentives, funding relationships, ownership ties, or disclosure gaps for {{YOUR_ORG}} due diligence. Builds source-bound relationship findings without treating affiliation as proof of bias, misconduct, or falsity; not for issuing legal conclusions or contacting subjects.
+ ---
+ 
+ # NukoTech COI Evidence Review
+diff --git a/nukotech-diagnosis-remediation-gate/SKILL.md b/nukotech-diagnosis-remediation-gate/SKILL.md
+index e35473b..ba48ccd 100644
+--- a/nukotech-diagnosis-remediation-gate/SKILL.md
++++ b/nukotech-diagnosis-remediation-gate/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: nukotech-diagnosis-remediation-gate
+-description: Use when NukoTech has identified a defect, failed check, wrong output, broken workflow, or suspected issue and must distinguish a verified fix from an unverified change, a proposal, a blocker, required research, or a hold without exceeding the user's requested scope.
++description: Use when {{YOUR_ORG}} has identified a defect, failed check, wrong output, broken workflow, or suspected issue and must distinguish a verified fix from an unverified change, a proposal, a blocker, required research, or a hold without exceeding the user's requested scope.
+ ---
+ 
+ # NukoTech Diagnosis Remediation Gate
+diff --git a/nukotech-handoff-capsule/SKILL.md b/nukotech-handoff-capsule/SKILL.md
+index 75df666..e0ad8e2 100644
+--- a/nukotech-handoff-capsule/SKILL.md
++++ b/nukotech-handoff-capsule/SKILL.md
+@@ -1,11 +1,11 @@
+ ---
+ name: nukotech-handoff-capsule
+-description: Use when creating or validating a portable NukoTech work handoff, session bridge, recovery capsule, or team-persona transfer that must preserve evidence, open decisions, failures, rollback, and delivery state without overstating completion or canonical status.
++description: Use when creating or validating a portable {{YOUR_ORG}} work handoff, session bridge, recovery capsule, or team-persona transfer that must preserve evidence, open decisions, failures, rollback, and delivery state without overstating completion or canonical status.
+ ---
+ 
+ # NukoTech Handoff Capsule
+ 
+-Create source-bound handoffs that another authorized NukoTech surface can resume safely.
++Create source-bound handoffs that another authorized {{YOUR_ORG}} surface can resume safely.
+ 
+ ## Workflow
+ 
+diff --git a/nukotech-handoff-capsule/agents/openai.yaml b/nukotech-handoff-capsule/agents/openai.yaml
+index d65407a..2290e43 100644
+--- a/nukotech-handoff-capsule/agents/openai.yaml
++++ b/nukotech-handoff-capsule/agents/openai.yaml
+@@ -1,4 +1,4 @@
+ interface:
+   display_name: "NukoTech Handoff Capsule"
+   short_description: "Create source-bound, resumable fleet handoffs"
+-  default_prompt: "Use $nukotech-handoff-capsule to create or validate a source-bound NukoTech fleet handoff without overstating delivery, completion, or canonical status."
++  default_prompt: "Use $nukotech-handoff-capsule to create or validate a source-bound {{YOUR_ORG}} work handoff without overstating delivery, completion, or canonical status."
+diff --git a/nukotech-handoff-capsule/scripts/validate_handoff_capsule.py b/nukotech-handoff-capsule/scripts/validate_handoff_capsule.py
+index 07e968d..0bae334 100644
+--- a/nukotech-handoff-capsule/scripts/validate_handoff_capsule.py
++++ b/nukotech-handoff-capsule/scripts/validate_handoff_capsule.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Validate a source-bound NukoTech fleet handoff capsule."""
++"""Validate a source-bound {{YOUR_ORG}} work handoff capsule."""
+ 
+ from __future__ import annotations
+ 
+diff --git a/nukotech-knowledge-ingest-gate/SKILL.md b/nukotech-knowledge-ingest-gate/SKILL.md
+index 1190386..d77f706 100644
+--- a/nukotech-knowledge-ingest-gate/SKILL.md
++++ b/nukotech-knowledge-ingest-gate/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: nukotech-knowledge-ingest-gate
+-description: Use when NukoTech is compiling supplied documents, notes, webpages, OCR, or research into an internal wiki, knowledge base, source index, or reusable briefing. Validates source identity and completeness, claim-level locators, derivative-source independence, entity and unit fidelity, contradiction retention, privacy and secret screening, version preservation, and evidence-based promotion; not for external publication, customer data, production systems, or operational decision authority.
++description: Use when {{YOUR_ORG}} is compiling supplied documents, notes, webpages, OCR, or research into an internal wiki, knowledge base, source index, or reusable briefing. Validates source identity and completeness, claim-level locators, derivative-source independence, entity and unit fidelity, contradiction retention, privacy and secret screening, version preservation, and evidence-based promotion; not for external publication, customer data, production systems, or operational decision authority.
+ ---
+ 
+ # NukoTech Knowledge Ingest Gate
+diff --git a/nukotech-resource-state-gate/SKILL.md b/nukotech-resource-state-gate/SKILL.md
+index 2f74be6..fd3a4f7 100644
+--- a/nukotech-resource-state-gate/SKILL.md
++++ b/nukotech-resource-state-gate/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: nukotech-resource-state-gate
+-description: Use when NukoTech needs to report context capacity, tool quota, storage, elapsed time, API requests, work items, or another bounded resource without false precision or vague exhaustion claims. Validates measurements, limits, warning thresholds, units, freshness, and outstanding-work counts while preserving UNKNOWN/CONFLICT states and never authorizing a stop or scope reduction.
++description: Use when {{YOUR_ORG}} needs to report context capacity, tool quota, storage, elapsed time, API requests, work items, or another bounded resource without false precision or vague exhaustion claims. Validates measurements, limits, warning thresholds, units, freshness, and outstanding-work counts while preserving UNKNOWN/CONFLICT states and never authorizing a stop or scope reduction.
+ ---
+ 
+ # NukoTech Resource State Gate
+diff --git a/nukotech-scale-readiness-gate/SKILL.md b/nukotech-scale-readiness-gate/SKILL.md
+index e6b09f6..08d1702 100644
+--- a/nukotech-scale-readiness-gate/SKILL.md
++++ b/nukotech-scale-readiness-gate/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: nukotech-scale-readiness-gate
+-description: Use when NukoTech is considering a hire, delegation, subcontractor, agent rollout, service line, or capacity increase and needs an evidence-bound readiness review before an authorized decision.
++description: Use when {{YOUR_ORG}} is considering a hire, delegation, subcontractor, agent rollout, service line, or capacity increase and needs an evidence-bound readiness review before an authorized decision.
+ ---
+ 
+ # NukoTech Scale Readiness Gate
+diff --git a/nukotech-scale-readiness-gate/scripts/validate_scale_readiness.py b/nukotech-scale-readiness-gate/scripts/validate_scale_readiness.py
+index 9ed8001..7896cc3 100644
+--- a/nukotech-scale-readiness-gate/scripts/validate_scale_readiness.py
++++ b/nukotech-scale-readiness-gate/scripts/validate_scale_readiness.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Validate a NukoTech scale-readiness packet without authorizing the scale event."""
++"""Validate a scale-readiness packet without authorizing the scale event."""
+ 
+ import argparse
+ import json
+diff --git a/nukotech-scope-change-gate/SKILL.md b/nukotech-scope-change-gate/SKILL.md
+index ae39e1e..761100f 100644
+--- a/nukotech-scope-change-gate/SKILL.md
++++ b/nukotech-scope-change-gate/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: nukotech-scope-change-gate
+-description: Use when NukoTech needs to compare proposed files, modules, functions, schemas, configurations, fixtures, observability, prerequisites, or other work against current authorized deliverables before expanding or changing task scope.
++description: Use when {{YOUR_ORG}} needs to compare proposed files, modules, functions, schemas, configurations, fixtures, observability, prerequisites, or other work against current authorized deliverables before expanding or changing task scope.
+ ---
+ 
+ # NukoTech Scope Change Gate
+diff --git a/nukotech-synthetic-data-governance/SKILL.md b/nukotech-synthetic-data-governance/SKILL.md
+index ce8119c..5521ad4 100644
+--- a/nukotech-synthetic-data-governance/SKILL.md
++++ b/nukotech-synthetic-data-governance/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: nukotech-synthetic-data-governance
+-description: Use when NUKOTECH needs to create, approve, evaluate, or make claims from synthetic, augmented, de-identified, SME-authored, or mixed real/synthetic datasets. Applies to demos, model development, benchmarks, client-facing metrics, provenance manifests, privacy/leakage review, and release gates.
++description: Use when {{YOUR_ORG}} needs to create, approve, evaluate, or make claims from synthetic, augmented, de-identified, SME-authored, or mixed real/synthetic datasets. Applies to demos, model development, benchmarks, client-facing metrics, provenance manifests, privacy/leakage review, and release gates.
+ ---
+ 
+ # NUKOTECH Synthetic Data Governance
+diff --git a/nukotech-synthetic-data-governance/scripts/validate_synthetic_packet.py b/nukotech-synthetic-data-governance/scripts/validate_synthetic_packet.py
+index eb5ba29..fd4bb63 100644
+--- a/nukotech-synthetic-data-governance/scripts/validate_synthetic_packet.py
++++ b/nukotech-synthetic-data-governance/scripts/validate_synthetic_packet.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Fail-closed validator for NUKOTECH synthetic-data evidence packets."""
++"""Fail-closed validator for synthetic-data evidence packets."""
+ 
+ from __future__ import annotations
+ 
+diff --git a/nukotech-threat-evidence-triage/SKILL.md b/nukotech-threat-evidence-triage/SKILL.md
+index a88690a..70fecf8 100644
+--- a/nukotech-threat-evidence-triage/SKILL.md
++++ b/nukotech-threat-evidence-triage/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: nukotech-threat-evidence-triage
+-description: Use when NukoTech needs to assess whether supplied evidence supports monitoring, authorized review, or specialist escalation for a possible business, project, supplier, competitive, platform, safety, legal, or cybersecurity threat. This is internal evidence triage, not authority to act, contact, retaliate, bid, deploy, or make legal or security determinations.
++description: Use when {{YOUR_ORG}} needs to assess whether supplied evidence supports monitoring, authorized review, or specialist escalation for a possible business, project, supplier, competitive, platform, safety, legal, or cybersecurity threat. This is internal evidence triage, not authority to act, contact, retaliate, bid, deploy, or make legal or security determinations.
+ ---
+ 
+ # NukoTech Threat Evidence Triage
+diff --git a/nukotech-threat-evidence-triage/scripts/validate_threat_triage.py b/nukotech-threat-evidence-triage/scripts/validate_threat_triage.py
+index 00f48a9..aa80d65 100644
+--- a/nukotech-threat-evidence-triage/scripts/validate_threat_triage.py
++++ b/nukotech-threat-evidence-triage/scripts/validate_threat_triage.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Validate a NukoTech threat-evidence triage packet without authorizing action."""
++"""Validate a threat-evidence triage packet without authorizing action."""
+ 
+ from __future__ import annotations
+ 
+diff --git a/nukotech-verification-integrity-gate/SKILL.md b/nukotech-verification-integrity-gate/SKILL.md
+index c96df8f..1bdbf83 100644
+--- a/nukotech-verification-integrity-gate/SKILL.md
++++ b/nukotech-verification-integrity-gate/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: nukotech-verification-integrity-gate
+-description: Use when NukoTech must verify a fix against tests, audits, CI checks, rubrics, benchmarks, or review gates and needs to distinguish a substantive target correction from metric gaming, cosmetic compliance, verifier mutation, stale evidence, or a passing check bound to the wrong revision.
++description: Use when {{YOUR_ORG}} must verify a fix against tests, audits, CI checks, rubrics, benchmarks, or review gates and needs to distinguish a substantive target correction from metric gaming, cosmetic compliance, verifier mutation, stale evidence, or a passing check bound to the wrong revision.
+ ---
+ 
+ # NukoTech Verification Integrity Gate
+diff --git a/nukotech-verification-integrity-gate/scripts/validate_verification_integrity.py b/nukotech-verification-integrity-gate/scripts/validate_verification_integrity.py
+index 62a16ce..09af1b4 100644
+--- a/nukotech-verification-integrity-gate/scripts/validate_verification_integrity.py
++++ b/nukotech-verification-integrity-gate/scripts/validate_verification_integrity.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Validate an internal NukoTech verification-integrity receipt."""
++"""Validate an internal verification-integrity receipt."""
+ 
+ import argparse
+ import json
+diff --git a/nukotech-verification-integrity-gate/tests/baseline.md b/nukotech-verification-integrity-gate/tests/baseline.md
+index ea3a881..9b93c8c 100644
+--- a/nukotech-verification-integrity-gate/tests/baseline.md
++++ b/nukotech-verification-integrity-gate/tests/baseline.md
+@@ -1,6 +1,6 @@
+ # Failing baseline
+ 
+-Source candidate: `audit-opacity-protocol/SKILL.md` from the authorized NukoTech
++Source candidate: `audit-opacity-protocol/SKILL.md` from the authorized {{YOUR_ORG}}
+ skills corpus.
+ 
+ Realistic application: a developer is asked to fix a behavior defect whose

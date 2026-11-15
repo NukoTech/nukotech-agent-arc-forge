@@ -1,0 +1,22 @@
+filters:
+  and:
+    - 'file.ext == "md"'
+    - 'file.inFolder("_review")'
+views:
+  - type: table
+    name: Stale review
+    filters:
+      and:
+        - 'review_status == "STALE_REVIEW"'
+    order:
+      - file.name
+      - note.fact_key
+      - note.review_due
+      - note.stale_reason
+properties:
+  note.fact_key:
+    displayName: Fact key
+  note.review_due:
+    displayName: Review due
+  note.stale_reason:
+    displayName: Reason

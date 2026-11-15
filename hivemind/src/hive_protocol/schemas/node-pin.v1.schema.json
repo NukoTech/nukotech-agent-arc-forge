@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/node-pin.v1.schema.json",
+  "title": "Hive Node version pin v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "node_id", "environment", "version", "release_sha256", "release_key_id", "activation", "authorization_ref", "signature"],
+  "properties": {
+    "schema_version": {"const": "hive.node-pin.v1"},
+    "node_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$"},
+    "environment": {"enum": ["LAB", "STAGING"]},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+-lab\\.[0-9]+$"},
+    "release_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "release_key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{24}$"},
+    "activation": {"const": false},
+    "authorization_ref": {"type": "string", "minLength": 1},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {"signature": {"type": "object", "additionalProperties": false, "required": ["algorithm", "key_id", "value"], "properties": {"algorithm": {"const": "Ed25519"}, "key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{24}$"}, "value": {"type": "string", "pattern": "^[A-Za-z0-9_-]{80,128}$"}}}}
+}

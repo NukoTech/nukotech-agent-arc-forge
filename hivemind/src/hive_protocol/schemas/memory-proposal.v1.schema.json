@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/memory-proposal.v1.schema.json",
+  "title": "Hive memory proposal v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "proposal_id", "message_id", "lane", "record", "identity_context_sha256", "privacy", "target", "signature"],
+  "properties": {
+    "schema_version": {"const": "hive.memory-proposal.v1"},
+    "proposal_id": {"type": "string", "format": "uuid"},
+    "message_id": {"type": "string", "format": "uuid"},
+    "lane": {"type": "object", "additionalProperties": false, "required": ["kind", "owner_id"], "properties": {"kind": {"enum": ["PERSONA", "SURFACE"]}, "owner_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$"}}},
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_type", "stable_id", "fact_key", "value", "narrative", "source_ref", "source_sha256", "occurred_at", "recorded_at", "confidence", "target_moc", "status", "supersedes", "precondition_sha256"],
+      "properties": {
+        "record_type": {"enum": ["RAW_SOURCE", "EVENT", "DURABLE_FACT", "DECISION", "LESSON", "MISTAKE", "PATTERN", "SNAPSHOT", "PRUNE_CANDIDATE"]},
+        "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$"},
+        "fact_key": {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$"},
+        "value": {},
+        "narrative": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "source_ref": {"type": "string", "minLength": 1},
+        "source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "occurred_at": {"type": "string", "format": "date-time"},
+        "recorded_at": {"type": "string", "format": "date-time"},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "target_moc": {"type": "string", "pattern": "^[A-Za-z0-9 ._-]+$"},
+        "status": {"const": "PROPOSED"},
+        "supersedes": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9._:-]+$"},
+        "precondition_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "identity_context_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "privacy": {"enum": ["non-private", "private"]},
+    "target": {"type": "object", "additionalProperties": false, "required": ["vault", "tier", "namespace"], "properties": {"vault": {"const": "HiveVault"}, "tier": {"enum": ["PERSONA_PRIVATE", "SURFACE_PRIVATE", "PROJECT_PRIVATE", "CUSTOMER_PRIVATE", "PRIME_SHARED", "NON_PRIVATE_RECEIPTS"]}, "namespace": {"type": "string", "pattern": "^[A-Za-z0-9._/-]+$"}}},
+    "signature": {"$ref": "#/$defs/signature"}
+  },
+  "$defs": {"signature": {"type": "object", "additionalProperties": false, "required": ["algorithm", "key_id", "value"], "properties": {"algorithm": {"const": "Ed25519"}, "key_id": {"type": "string", "pattern": "^ed25519:[0-9a-f]{24}$"}, "value": {"type": "string", "pattern": "^[A-Za-z0-9_-]{80,128}$"}}}}
+}

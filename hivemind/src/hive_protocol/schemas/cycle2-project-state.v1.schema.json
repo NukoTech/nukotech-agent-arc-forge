@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schema/hive/cycle2-project-state.v1.json",
+  "type": "object",
+  "required": ["schema_version", "project_id", "version", "updated_at", "identity", "values", "task_status"],
+  "properties": {
+    "schema_version": {"const": "hive.cycle2.project-state.v1"},
+    "project_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "version": {"type": "integer", "minimum": 1},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "identity": {"type": "object"},
+    "values": {"type": "object"},
+    "task_status": {"type": "object"}
+  },
+  "additionalProperties": false
+}

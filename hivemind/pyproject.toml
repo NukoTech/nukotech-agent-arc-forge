@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nukotech-hive-local"
+version = "0.1.0"
+description = "Installable local-first NukoTech Hive alpha with portable Markdown, retrieval, graph, agents, Git rollback, and receipts"
+readme = "packaging/product-readme.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dependencies = [
+  "cryptography>=50.0.1,<51",
+  "jsonschema>=4.26,<5",
+  "PyYAML>=6.0.2,<7",
+]
+
+[project.scripts]
+hive-local = "hive_protocol.product.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["hive_protocol.reference*"]
+
+[tool.setuptools.package-data]
+hive_protocol = [
+  "schemas/*.json",
+  "release-identity.json",
+  "receiver/*.json",
+  "bases/*.base",
+  "adapters/capture/*.json",
+  "adapters/research/*.json",
+  "product/static/*.css",
+  "product/static/*.js",
+]
+
+[tool.setuptools.exclude-package-data]
+hive_protocol = ["reference/*.json"]

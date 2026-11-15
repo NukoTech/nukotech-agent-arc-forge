@@ -1,0 +1,58 @@
+NukoTech Agent Arc Forge
+Copyright (c) 2026 Nuko Technologies LLC
+
+Authorship belongs to Damien Okun.
+
+This product includes software developed by Nuko Technologies LLC.
+
+## Third-party attributions
+
+The packs below adapt published methods or prompts. The adaptations are original
+Nuko Technologies LLC text under MIT; credit for the underlying work belongs to
+its authors.
+
+- packs/stair-toc-retrieval: method from Vineet Kumar, Meghanadh Pulivarthi,
+  Vishwajeet Kumar, Jaydeep Sen, Riyaz Ahmad Bhat and Sachindra Joshi (IBM
+  Research), "STAIR (STructure Aware Information Retriever): A novel dataset and
+  LLM based retriever for document structure augmentation", arXiv:2609.03874
+  (2026), https://arxiv.org/abs/2609.03874. The SearchTome benchmark is theirs.
+  The pack is a prompt-level pattern; it does not include IBM's model weights,
+  code or dataset. Licensed CC BY 4.0
+  (https://creativecommons.org/licenses/by/4.0/). This pack is an original
+  prompt-level adaptation of the method. Changes: the paper's model weights,
+  code, and dataset are not included.
+
+- packs/five-step-process-algorithm: inspired by the post by AI Guides
+  (@free_ai_guides) on X, 7 October 2026, https://x.com/free_ai_guides, which
+  applies Elon Musk's five-step algorithm. The pack text and prompt are original
+  wording; only the idea is credited.
+
+- packs/feynman-method: original Nuko Technologies LLC text implementing the
+  widely shared Feynman learning method (simple explanation, confusion check,
+  refinement cycles, application test, teaching snapshot), popularly associated
+  with Richard P. Feynman. A public example of a similar skill, cited only as an
+  example of the method and not as source text copied into this pack, is
+  https://github.com/liza-mas/liza/blob/main/skills/feynman/SKILL.md (Apache-2.0).
+
+- Pinned upstream pack nukotech-agent-arc-gates (rev8 overlay), research credits
+  as stated in that pack:
+  - verification-integrity-gate, end-to-end-trace-gate and
+    capability-reuse-preflight draw on ideas from Foss, D.T. (2026),
+    "Cooperative Sabotage: How Frontier AI Covertly Undermines Its Own
+    Replacement", DOI 10.13140/RG.2.2.29674.07362.
+  - claim-evidence-review and coi-evidence-review draw on Yuntao Du, Minh Dinh,
+    Kaiyuan Zhang and Ninghui Li (Purdue University), "AutoVerifier: An Agentic
+    Automated Verification Framework Using Large Language Models",
+    arXiv:2604.02617 (2026), https://arxiv.org/abs/2604.02617. The paper is
+    licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Credit is
+    for the research ideas; this repository does not vendor the paper.
+  - knowledge-ingest-gate is inspired by Andrej Karpathy's LLM knowledge-base
+    ("second brain") approach.
+
+- Pinned upstream pack anti-sycophancy-protocol, research credit as stated in
+  that pack: Kartik Chandra, Max Kleiman-Weiner, Jonathan Ragan-Kelley and
+  Joshua B. Tenenbaum (MIT CSAIL, University of Washington, MIT Brain and
+  Cognitive Sciences), "Sycophantic Chatbots Cause Delusional Spiraling, Even in
+  Ideal Bayesians", arXiv:2602.19141 (2026), https://arxiv.org/abs/2602.19141.
+  The paper is licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
+  Credit is for the research ideas; this repository does not vendor the paper.

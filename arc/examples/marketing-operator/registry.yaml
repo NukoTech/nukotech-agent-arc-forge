@@ -1,0 +1,28 @@
+schema: nukotech.agent_arc.registry.v1
+registry_version: 0.3.0-alpha.1
+product:
+  id: nukotech-agent-arc
+  status: LOCAL_COMPOSER_ALPHA
+components:
+  - schema: nukotech.agent_arc.component.v1
+    id: community-draft-skill
+    version: 1.0.0
+    type: skill
+    sha256: ab45866c52119b439f76fadb94ec8842fd0ef18ff142025fa19aa853b0fc398d
+    path: components/draft-skill.txt
+    license: MIT
+    provenance:
+      source: first-party
+      owner: example
+    dependencies: []
+    conflicts: []
+    capabilities:
+      - draft_content
+    side_effects: []
+    stop_conditions:
+      - operator_stop
+      - missing_verified_source
+      - authorization_boundary
+    rollback:
+      - remove_candidate_package
+

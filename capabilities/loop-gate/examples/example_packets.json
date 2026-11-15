@@ -1,0 +1,82 @@
+[
+ {
+  "unit_id": "intake.request.001",
+  "goal": "Capture a new work request and assign a record id",
+  "owner_bot": "Intake Agent",
+  "loop_stage": "data_entry",
+  "inputs": {
+   "issue_record_id": true
+  },
+  "deps": [],
+  "check": {
+   "type": "required_keys",
+   "keys": [
+    "record_id",
+    "due"
+   ]
+  },
+  "irreversible": false,
+  "max_attempts": 2
+ },
+ {
+  "unit_id": "verify.request.001",
+  "goal": "Read back the stored request and confirm it matches intake",
+  "owner_bot": "Intake Agent",
+  "loop_stage": "verification",
+  "inputs": {
+   "record_id": "from:intake.request.001"
+  },
+  "deps": [
+   "intake.request.001"
+  ],
+  "check": {
+   "type": "from_deps",
+   "field": "readback.due",
+   "dep": "intake.request.001",
+   "dep_field": "due"
+  },
+  "irreversible": false,
+  "max_attempts": 2
+ },
+ {
+  "unit_id": "draft.report.001",
+  "goal": "Draft the report; totals must equal the sum of lines",
+  "owner_bot": "Report Agent",
+  "loop_stage": "execution",
+  "inputs": {
+   "record_id": "from:intake.request.001"
+  },
+  "deps": [
+   "verify.request.001"
+  ],
+  "check": {
+   "type": "equals",
+   "left": "total",
+   "right": "sum_lines",
+   "tolerance": 0.01
+  },
+  "irreversible": false,
+  "max_attempts": 2
+ },
+ {
+  "unit_id": "deliver.report_send.001",
+  "goal": "Send the report to the requester",
+  "owner_bot": "Report Agent",
+  "loop_stage": "report",
+  "inputs": {
+   "record_id": "from:intake.request.001"
+  },
+  "deps": [
+   "draft.report.001"
+  ],
+  "check": {
+   "type": "required_keys",
+   "keys": [
+    "sent_to"
+   ]
+  },
+  "irreversible": true,
+  "irreversible_reason": "external send",
+  "max_attempts": 1
+ }
+]

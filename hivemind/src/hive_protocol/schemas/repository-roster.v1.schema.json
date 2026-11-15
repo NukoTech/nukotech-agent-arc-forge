@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nukotech.invalid/hive/repository-roster.v1.schema.json",
+  "title": "Hive repository observation roster",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "repositories"],
+  "properties": {
+    "schema_version": {"const": "hive.repository-roster.v1"},
+    "repositories": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "repository", "ref", "role", "required", "transport"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$"},
+          "repository": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"},
+          "ref": {"type": "string", "pattern": "^refs/heads/[A-Za-z0-9._/-]+$"},
+          "role": {"type": "string", "minLength": 3},
+          "required": {"type": "boolean"},
+          "transport": {"enum": ["github-app", "fixed-read-evidence"]},
+          "expected_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "expected_absent": {"type": "boolean"},
+          "evidence_observed_at": {"type": "string", "format": "date-time"},
+          "evidence_max_age_hours": {"type": "integer", "minimum": 1, "maximum": 168}
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"transport": {"const": "fixed-read-evidence"}}},
+            "then": {"required": ["expected_commit", "evidence_observed_at", "evidence_max_age_hours"]}
+          }
+        ]
+      }
+    }
+  }
+}

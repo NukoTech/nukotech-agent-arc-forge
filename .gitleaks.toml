@@ -1,0 +1,40 @@
+# gitleaks config: default rules plus narrow allowlists for synthetic test
+# fixtures and cryptography type-name false positives.
+[extend]
+useDefault = true
+
+# Folded into generic-api-key via targetRules so this is a rule allowlist
+# (global path allowlists skip the whole file). Path AND the exact synthetic
+# token: a different credential-shaped string in this file is still reported.
+[[allowlists]]
+description = "Synthetic sk-test token used by Arc packaging negative tests"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''arc/tests/test_packaging\.py''']
+regexTarget = "secret"
+regexes = ['''^sk-test-1234567890abcdefghijklmnop$''']
+
+# generic-api-key treats the Ed25519PrivateKey type name as a secret. Git-mode
+# fingerprints include a commit SHA and historical line numbers; dir/--no-git
+# fingerprints do not. A secret regex covers both modes without commit SHAs.
+[[allowlists]]
+description = "cryptography Ed25519PrivateKey type name is not a credential"
+targetRules = ["generic-api-key"]
+regexTarget = "secret"
+regexes = ['''^Ed25519PrivateKey$''']
+
+# Synthetic workflow idempotency keys (not credentials). targetRules folds
+# this into generic-api-key so the path criterion does not skip the files.
+[[allowlists]]
+description = "Synthetic hivemind workflow idempotency keys"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = [
+    '''hivemind/tests/test_m33_visual_workflows_e2e\.py''',
+    '''hivemind/tests/test_workflow_definitions\.py''',
+]
+regexTarget = "secret"
+regexes = [
+    '''^publish-m33-e2e$''',
+    '''^publish-v3-wrong$''',
+]

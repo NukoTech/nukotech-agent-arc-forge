@@ -1,0 +1,19 @@
+schema: nukotech.agent_arc.authorization.v1
+id: context-pack-staging-only
+subject: context-and-prompting-pack
+allowed_capabilities:
+  - select_prompt_strategy
+  - bootstrap_organization_context
+  - stage_context_candidate
+  - govern_context
+allowed_side_effects: []
+prohibited_effects:
+  - bulk_context_import
+  - automatic_memory_promotion
+  - cross_tenant_context_reuse
+  - public_publish
+  - external_send
+  - connect_account
+  - spend_money
+  - delete_data
+  - deploy_production

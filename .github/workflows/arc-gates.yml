@@ -1,0 +1,88 @@
+# Required pull-request and main-branch check for this repository.
+# Do not vendor the gates tree. Pin is a full commit SHA, not a moving tag.
+#
+# Pin: NukoTech/nukotech-agent-arc-gates@f4ff928378d46b1013a4c33f2ff443850a3dbd5b
+# The public repo has no packaging metadata, so this workflow checks the
+# gates out at that full commit SHA into a transient CI path and runs the
+# 14 validators' tests there. After a pyproject.toml is published, switch
+# the install step to:
+#   pip install "nukotech-agent-arc-gates @ git+https://github.com/NukoTech/nukotech-agent-arc-gates.git@f4ff928378d46b1013a4c33f2ff443850a3dbd5b"
+# and re-pin if a later genericized commit is published with a named GO.
+
+name: arc-gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: arc-gates-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Full commit SHA, not a branch or moving tag.
+  ARC_GATES_REPO: https://github.com/NukoTech/nukotech-agent-arc-gates
+  ARC_GATES_SHA: f4ff928378d46b1013a4c33f2ff443850a3dbd5b
+
+jobs:
+  arc-gates:
+    name: arc-gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out this repository (clean workspace, no persisted credentials)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          clean: true
+          persist-credentials: false
+
+      - name: Check out nukotech-agent-arc-gates at the pinned commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: NukoTech/nukotech-agent-arc-gates
+          ref: ${{ env.ARC_GATES_SHA }}
+          path: _deps/nukotech-agent-arc-gates
+          clean: true
+          persist-credentials: false
+
+      - name: Refuse a moving or unexpected pin
+        run: |
+          set -euo pipefail
+          got="$(git -C _deps/nukotech-agent-arc-gates rev-parse HEAD)"
+          echo "pinned=${ARC_GATES_SHA}"
+          echo "checked_out=${got}"
+          test "${got}" = "${ARC_GATES_SHA}"
+
+      - name: Guard against a stray top-level build/ directory
+        run: |
+          set -euo pipefail
+          if [ -e build ]; then
+            echo "Refusing to run: a top-level 'build' path is present and can shadow the PyPA 'build' package."
+            ls -ld build
+            exit 1
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+
+      - name: Install pytest (gates are stdlib validators; no package metadata yet)
+        run: python -m pip install --disable-pip-version-check "pytest==8.4.2"
+
+      - name: Run all 14 gate validators' tests
+        run: |
+          set -euo pipefail
+          # Invoke from the repo root so a stray top-level build/ would be
+          # visible on sys.path; the previous step already refused that.
+          # --rootdir keeps the gates tree's own test layout.
+          python -m pytest -q --tb=short \
+            --rootdir=_deps/nukotech-agent-arc-gates \
+            _deps/nukotech-agent-arc-gates
+          # Local baseline on this SHA (2026-11-14): 461 passed, 3 subtests passed.
+          # pytest exit status is the gate; do not hard-fail on a different count here.

@@ -1,0 +1,19 @@
+{
+  "schema_version": "nukotech.hivemind.repository-boundary.v1",
+  "canonical_plan": {
+    "path": "docs/plans/ROADMAP.md",
+    "sha256": "d5bd471278d446539a330d9ab8b6458ec8bb9403c6aa36c53e9023d1bc98ebdc"
+  },
+  "active_roots": [
+    "config",
+    "contracts",
+    "docs",
+    "installer",
+    "packaging",
+    "policies",
+    "scripts",
+    "src",
+    "tests"
+  ],
+  "legacy_roots": []
+}

@@ -1,0 +1,11 @@
+{
+  "schema": "nukotech.arcforge.upstream-lock.v1",
+  "note": "Public NukoTech packs are pinned by exact commit, never vendored. Overlays are applied after checkout until the same change lands upstream: .patch files via git apply, .json line overlays via fetch.py (originals identified by SHA-256 only).",
+  "packs": [
+    {"name": "max-imp-loop", "url": "https://github.com/NukoTech/max-imp-loop.git", "commit": "d9eac6e8a5082187b427edae0928a4748ea9775e", "kind": "loop", "overlays": []},
+    {"name": "nukotech-agent-arc-gates", "url": "https://github.com/NukoTech/nukotech-agent-arc-gates.git", "commit": "f4ff928378d46b1013a4c33f2ff443850a3dbd5b", "kind": "governance_or_harness", "overlays": ["overlays/nukotech-agent-arc-gates.rev8.patch"]},
+    {"name": "anti-sycophancy-protocol", "url": "https://github.com/NukoTech/anti-sycophancy-protocol.git", "commit": "5de997d91184822cdd1cb181c9236e7900671a84", "kind": "skill", "overlays": []},
+    {"name": "claim-verification-pipeline", "url": "https://github.com/NukoTech/claim-verification-pipeline.git", "commit": "4545dd7f54780cb6d6615a7f995fce3d90043c32", "kind": "skill", "overlays": []},
+    {"name": "nzt99", "url": "https://github.com/NukoTech/nzt99.git", "commit": "8c28031adfc5b51774977dff59cecfedf0557caf", "kind": "skill", "overlays": []}
+  ]
+}
