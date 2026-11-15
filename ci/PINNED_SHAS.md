@@ -17,7 +17,7 @@ Additional jobs from workflow `ci` (do not duplicate the six jobs above):
 - `package`
 - `demo`
 
-Additional job from workflow `hivemind-tests` (path-filtered, nightly, and workflow_dispatch):
+Additional job from workflow `hivemind-tests` (every PR and push to main, because it is a required check; also nightly and workflow_dispatch):
 
 - `hivemind-tests`
 
